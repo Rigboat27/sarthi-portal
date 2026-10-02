@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { TransmissionTracker } from "@/components/TransmissionTracker";
 
 interface FamilyMemberInput {
   name: string;
@@ -172,6 +173,10 @@ export default function TransmissionPage() {
           </pre>
         </div>
       )}
+
+      <div className="mt-8">
+        <TransmissionTracker />
+      </div>
 
       <Link
         href="/dashboard"

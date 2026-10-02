@@ -35,3 +35,38 @@ export interface EngineHealth {
   mockMode: boolean;
   spendInr: number;
 }
+
+export interface OcrResult {
+  text: string;
+  fields: Record<string, string>;
+}
+
+export interface NodalCompany {
+  name: string;
+  ticker: string;
+  isin: string;
+  rta: string;
+  lookupUrl: string;
+  verified: boolean;
+}
+
+export interface NodalResponse {
+  companies: NodalCompany[];
+  warning: string;
+}
+
+/** Multipart upload to /docs/ocr (browser sets the boundary). */
+export async function uploadOcr(file: File): Promise<OcrResult> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch(`${API_BASE}/docs/ocr`, { method: "POST", body: fd });
+  const env = (await res.json()) as ApiEnvelope<OcrResult>;
+  if (!env.ok) {
+    throw new Error(
+      typeof env.error === "object" && env.error !== null
+        ? JSON.stringify(env.error)
+        : "OCR failed",
+    );
+  }
+  return env.data as OcrResult;
+}
