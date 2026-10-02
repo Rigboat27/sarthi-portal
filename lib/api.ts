@@ -37,8 +37,17 @@ export interface EngineHealth {
 }
 
 export interface OcrResult {
-  text: string;
-  fields: Record<string, string>;
+  kycName: string;
+  certificateName: string;
+  isMatch: boolean;
+}
+
+export interface AffidavitResult {
+  affidavit: Record<string, unknown>;
+  affidavitText: string;
+  checklist: string[];
+  pdfBase64: string | null;
+  mock: boolean;
 }
 
 export interface NodalCompany {
@@ -55,10 +64,11 @@ export interface NodalResponse {
   warning: string;
 }
 
-/** Multipart upload to /docs/ocr (browser sets the boundary). */
-export async function uploadOcr(file: File): Promise<OcrResult> {
+/** Multipart upload of KYC + certificate to /docs/ocr (browser sets the boundary). */
+export async function uploadOcr(kyc: File, cert: File): Promise<OcrResult> {
   const fd = new FormData();
-  fd.append("file", file);
+  fd.append("kyc", kyc);
+  fd.append("cert", cert);
   const res = await fetch(`${API_BASE}/docs/ocr`, { method: "POST", body: fd });
   const env = (await res.json()) as ApiEnvelope<OcrResult>;
   if (!env.ok) {

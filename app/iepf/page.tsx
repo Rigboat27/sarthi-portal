@@ -4,58 +4,29 @@ import { useState } from "react";
 import Link from "next/link";
 import { api, uploadOcr, OcrResult, NodalResponse } from "@/lib/api";
 
-interface MatchResult {
-  score: number;
-  match: boolean;
-  a: string;
-  b: string;
-}
-
 export default function IepfPage() {
-  const [aadhaar, setAadhaar] = useState("");
-  const [cert, setCert] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<MatchResult | null>(null);
+  const [kycFile, setKycFile] = useState<File | null>(null);
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<"idle" | "analyzing" | "done" | "error">("idle");
+  const [ocr, setOcr] = useState<OcrResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // OCR upload
-  const [ocrBusy, setOcrBusy] = useState(false);
-  const [ocr, setOcr] = useState<OcrResult | null>(null);
-
-  // Nodal officer lookup
   const [company, setCompany] = useState("");
   const [nodalBusy, setNodalBusy] = useState(false);
   const [nodal, setNodal] = useState<NodalResponse | null>(null);
 
-  async function check() {
-    setBusy(true);
+  async function handleAnalyze() {
+    if (!kycFile || !certFile) return;
+    setStatus("analyzing");
     setError(null);
+    setOcr(null);
     try {
-      const res = await api<MatchResult>("/docs/match", {
-        method: "POST",
-        body: JSON.stringify({ a: aadhaar, b: cert }),
-      });
-      setResult(res);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to run the check");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleOcr(file: File) {
-    setOcrBusy(true);
-    setError(null);
-    try {
-      const res = await uploadOcr(file);
+      const res = await uploadOcr(kycFile, certFile);
       setOcr(res);
-      // Pre-fill the certificate name from OCR so the user can just check.
-      const name = res.fields?.name ?? "";
-      if (name) setCert(name);
+      setStatus("done");
     } catch (e) {
       setError(e instanceof Error ? e.message : "OCR failed");
-    } finally {
-      setOcrBusy(false);
+      setStatus("error");
     }
   }
 
@@ -80,9 +51,9 @@ export default function IepfPage() {
       </p>
       <h1 className="mt-1 text-2xl font-bold">Catch name mismatches before you file</h1>
       <p className="mt-2 text-ink-500">
-        The #1 reason IEPF-5 claims are rejected is a name/signature mismatch
-        between Aadhaar and the old share certificate — followed by sending
-        documents to the wrong address. Sarthi flags both early.
+        IEPF-5 claims are rejected when your current KYC name doesn&apos;t exactly
+        match the name on old share certificates. Upload both below — Sarthi
+        reads them with AI and flags a mismatch before you file.
       </p>
 
       {error && (
@@ -92,92 +63,70 @@ export default function IepfPage() {
       )}
 
       {/* OCR upload */}
-      <div className="mt-8 rounded-2xl border border-ink-200 bg-white p-6">
-        <h2 className="text-lg font-bold">1 · Upload your old certificate</h2>
-        <p className="mt-1 text-sm text-ink-500">
-          Sarthi reads the name off the document so you don&apos;t have to retype it.
-        </p>
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) handleOcr(f);
-          }}
-          className="mt-3 block w-full text-sm text-ink-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink-800"
-        />
-        {ocrBusy && <p className="mt-2 text-sm text-ink-400">Reading document…</p>}
-        {ocr && (
-          <div className="mt-3 rounded-xl bg-ink-50 p-3 text-sm">
-            <p className="font-medium">Extracted name:</p>
-            <p className="font-mono text-lg">{ocr.fields?.name ?? "(none)"}</p>
-            <p className="text-xs text-ink-400">
-              Mock OCR (Team B&apos;s real OCR replaces this).
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Name match */}
-      <div className="mt-6 space-y-4 rounded-2xl border border-ink-200 bg-white p-6">
-        <h2 className="text-lg font-bold">2 · Compare names</h2>
-        <Field label="Name on Aadhaar / KYC">
+      <div className="mt-8 space-y-4 rounded-2xl border border-ink-200 bg-white p-6">
+        <h2 className="text-lg font-bold">1 · Upload your documents</h2>
+        <Field label="KYC document (Aadhaar / PAN)">
           <input
-            className="input"
-            value={aadhaar}
-            onChange={(e) => setAadhaar(e.target.value)}
-            placeholder="e.g. Ramesh Sharma"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setKycFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-sm text-ink-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink-800"
           />
         </Field>
-        <Field label="Name on share certificate">
+        <Field label="Share certificate / dividend warrant">
           <input
-            className="input"
-            value={cert}
-            onChange={(e) => setCert(e.target.value)}
-            placeholder="e.g. Ramesh Sharm"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setCertFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-sm text-ink-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink-800"
           />
         </Field>
 
         <button
-          onClick={check}
-          disabled={busy || !aadhaar.trim() || !cert.trim()}
+          onClick={handleAnalyze}
+          disabled={!kycFile || !certFile || status === "analyzing"}
           className="w-full rounded-xl bg-saffron-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-saffron-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "Checking…" : "Check for mismatch"}
+          {status === "analyzing" ? "Analyzing with AI…" : "Run AI OCR check"}
         </button>
       </div>
 
-      {result && (
-        <div
-          className={`mt-6 rounded-2xl border p-6 ${
-            result.match
-              ? "border-forest-200 bg-forest-50"
-              : "border-amber-200 bg-amber-50"
-          }`}
-        >
-          <p className="text-lg font-bold">
-            {result.match
-              ? "✅ Names match"
-              : "⚠️ Likely mismatch — you may need an affidavit"}
-          </p>
-          <p className="mt-1 text-sm">
-            Match confidence: <strong>{(result.score * 100).toFixed(0)}%</strong>
-          </p>
-          <p className="mt-2 font-mono text-xs text-ink-500">
-            &quot;{result.a}&quot; vs &quot;{result.b}&quot;
-          </p>
-          {!result.match && (
-            <p className="mt-3 text-sm">
-              Prepare an affidavit for the name discrepancy before filing the
-              IEPF-5 form.
-            </p>
+      {ocr && (
+        <div className="mt-6 rounded-2xl border border-ink-200 bg-white p-6">
+          <div className="space-y-2 rounded-xl bg-ink-50 p-4">
+            <div className="flex justify-between border-b border-ink-200 pb-2 text-sm">
+              <span className="text-ink-500">KYC name</span>
+              <span className="font-semibold">{ocr.kycName}</span>
+            </div>
+            <div className="flex justify-between pt-1 text-sm">
+              <span className="text-ink-500">Certificate name</span>
+              <span className="font-semibold">{ocr.certificateName}</span>
+            </div>
+          </div>
+
+          {ocr.isMatch ? (
+            <div className="mt-4 rounded-xl border border-forest-200 bg-forest-50 p-4 text-forest-900">
+              <p className="font-bold">✅ Names match — safe to proceed</p>
+              <p className="mt-1 text-sm opacity-90">
+                You are safe to proceed with the IEPF-5 filing.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+              <p className="font-bold">⚠️ Name mismatch detected</p>
+              <p className="mt-1 text-sm opacity-90">
+                The IEPF Authority will likely reject your claim. Obtain a legal{" "}
+                <strong>Affidavit for Name Discrepancy</strong> and an NOC before
+                submitting.
+              </p>
+            </div>
           )}
         </div>
       )}
 
       {/* Nodal Officer router */}
       <div className="mt-6 space-y-4 rounded-2xl border border-ink-200 bg-white p-6">
-        <h2 className="text-lg font-bold">3 · Route to the right Nodal Officer</h2>
+        <h2 className="text-lg font-bold">2 · Route to the right Nodal Officer</h2>
         <p className="text-sm text-ink-500">
           Physical documents must go to the company&apos;s Nodal Officer, not the
           IEPF authority. Look up the company here.
