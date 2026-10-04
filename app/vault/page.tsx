@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
+import { t } from "@/lib/i18n";
 import {
   createLegacyVault,
   renderVaultHtml,
@@ -10,7 +11,7 @@ import {
 } from "@/lib/vault";
 
 export default function VaultPage() {
-  const { snapshot } = useStore();
+  const { snapshot, lang } = useStore();
 
   const [owner, setOwner] = useState("");
   const [trustedContact, setTrustedContact] = useState("");
@@ -77,7 +78,7 @@ export default function VaultPage() {
       <p className="text-xs font-semibold uppercase tracking-wide text-saffron-600">
         Family Vault
       </p>
-      <h1 className="mt-1 text-2xl font-bold">Create your Legacy Vault</h1>
+      <h1 className="mt-1 text-2xl font-bold">{t(lang, "page.vault.title")}</h1>
       <p className="mt-2 text-ink-500">
         Sarthi encrypts your {snapshot.holdings.length} accounts into a single
         file your trusted contact can decrypt only with the passphrase you
@@ -146,7 +147,7 @@ export default function VaultPage() {
           disabled={!passOk || busy}
           className="w-full rounded-xl bg-forest-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "Encrypting…" : "🔒 Encrypt & generate vault"}
+          {busy ? "Encrypting…" : `🔒 ${t(lang, "page.vault.encrypt")}`}
         </button>
       </div>
 

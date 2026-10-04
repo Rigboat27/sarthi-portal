@@ -11,8 +11,11 @@ import {
   NodalResponse,
   NameAffidavitResult,
 } from "@/lib/api";
+import { useStore } from "@/components/StoreProvider";
+import { t } from "@/lib/i18n";
 
 export default function IepfPage() {
+  const { lang } = useStore();
   const [kycFile, setKycFile] = useState<File | null>(null);
   const [certFile, setCertFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "analyzing" | "done" | "error">("idle");
@@ -78,7 +81,7 @@ export default function IepfPage() {
       <p className="text-xs font-semibold uppercase tracking-wide text-saffron-600">
         IEPF Claim Pre-Validator
       </p>
-      <h1 className="mt-1 text-2xl font-bold">Catch name mismatches before you file</h1>
+      <h1 className="mt-1 text-2xl font-bold">{t(lang, "page.iepf.title")}</h1>
       <p className="mt-2 text-ink-500">
         IEPF-5 claims are rejected when your current KYC name doesn&apos;t exactly
         match the name on old share certificates. Upload both below — Sarthi
@@ -116,7 +119,7 @@ export default function IepfPage() {
           disabled={!kycFile || !certFile || status === "analyzing"}
           className="w-full rounded-xl bg-saffron-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-saffron-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {status === "analyzing" ? "Analyzing with AI…" : "Run AI OCR check"}
+          {status === "analyzing" ? "Analyzing with AI…" : t(lang, "page.iepf.analyze")}
         </button>
       </div>
 
@@ -225,10 +228,12 @@ export default function IepfPage() {
                       {c.name} <span className="text-ink-400">({c.ticker})</span>
                     </p>
                     <p className="text-xs text-ink-500">
-                      RTA: {c.rta} · ISIN {c.isin}
+                      {c.sector} · RTA: {c.rta}
                     </p>
                     <a
-                      href={c.lookupUrl}
+                      href={`https://www.google.com/search?q=${encodeURIComponent(
+                        c.name + " IEPF nodal officer",
+                      )}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-xs font-semibold text-saffron-600 hover:text-saffron-700"

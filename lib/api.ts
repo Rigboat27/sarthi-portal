@@ -59,10 +59,8 @@ export interface NameAffidavitResult {
 export interface NodalCompany {
   name: string;
   ticker: string;
-  isin: string;
+  sector: string;
   rta: string;
-  lookupUrl: string;
-  verified: boolean;
 }
 
 export interface NodalResponse {

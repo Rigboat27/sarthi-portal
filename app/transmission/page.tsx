@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api, AffidavitResult, downloadPdf, printText } from "@/lib/api";
 import { TransmissionTracker } from "@/components/TransmissionTracker";
 import { useStore } from "@/components/StoreProvider";
+import { t } from "@/lib/i18n";
 import { ACCOUNT_TYPE_META } from "@/lib/types";
 
 interface HeirInput {
@@ -40,7 +41,7 @@ export default function TransmissionPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Pull account data from the connected Wealth Map (Account Aggregator).
-  const { snapshot, connected } = useStore();
+  const { snapshot, connected, lang } = useStore();
   const transmittable = (snapshot?.holdings ?? []).filter(
     (h) => h.type === "demat" || h.type === "mutual_fund",
   );
@@ -102,7 +103,7 @@ export default function TransmissionPage() {
       <p className="text-xs font-semibold uppercase tracking-wide text-saffron-600">
         Transmission Copilot
       </p>
-      <h1 className="mt-1 text-2xl font-bold">Generate the transmission affidavit</h1>
+      <h1 className="mt-1 text-2xl font-bold">{t(lang, "page.transmission.title")}</h1>
       <p className="mt-2 text-ink-500">
         Fill in the details and Sarthi produces the official SEBI affidavit for
         transmission of shares, ready to print on stamp paper and notarize.
@@ -215,7 +216,7 @@ export default function TransmissionPage() {
           disabled={busy || !deceased.trim() || !applicant.trim()}
           className="w-full rounded-xl bg-ink-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink-800 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "Generating…" : "Generate affidavit (PDF)"}
+          {busy ? "Generating…" : t(lang, "page.transmission.generate")}
         </button>
       </div>
 

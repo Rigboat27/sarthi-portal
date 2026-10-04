@@ -37,7 +37,7 @@ function DashboardInner() {
     return (
       <div className="mx-auto flex max-w-2xl flex-col items-center px-6 py-24 text-center">
         <span className="text-5xl">🗺️</span>
-        <h1 className="mt-6 text-3xl font-bold">Build your Legacy Wealth Map</h1>
+        <h1 className="mt-6 text-3xl font-bold">{t(lang, "page.dashboard.emptyTitle")}</h1>
         <p className="mt-3 max-w-md text-ink-500">
           Connect securely through the Account Aggregator framework to see every
           bank account, demat holding, mutual fund and policy — and whether a
@@ -73,7 +73,7 @@ function DashboardInner() {
           <p className="text-xs font-semibold uppercase tracking-wide text-saffron-600">
             Connected via {snapshot.aggregator.name}
           </p>
-          <h1 className="mt-1 text-2xl font-bold">Your Legacy Wealth Map</h1>
+          <h1 className="mt-1 text-2xl font-bold">{t(lang, "page.dashboard.wealthMap")}</h1>
           <p className="text-sm text-ink-400">
             Fetched {new Date(snapshot.fetchedAt).toLocaleString()} · Consent{" "}
             <code className="rounded bg-ink-100 px-1.5 py-0.5 text-xs">
