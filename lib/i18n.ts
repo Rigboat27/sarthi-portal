@@ -1,14 +1,96 @@
-// Lightweight bilingual dictionary for a Bharat-first UI.
-// Only the most visible labels are translated to keep the demo readable,
-// while the app structure and legal copy stay in English for clarity.
+// Bharat-first interface localization — 22 scheduled Indian languages + English.
+// The selector supports all 23; strings fall back to English when a translation
+// is not yet provided. `en` is always the base.
 
-export type Lang = "en" | "hi";
+export type Lang =
+  | "en" | "hi" | "bn" | "te" | "mr" | "ta" | "ur" | "gu" | "kn" | "ml"
+  | "or" | "pa" | "as" | "mai" | "sat" | "ks" | "ne" | "kok" | "sd" | "doi"
+  | "mni" | "brx" | "sa";
 
-export const STRINGS = {
-  "nav.dashboard": { en: "Wealth Map", hi: "धन मानचित्र" },
-  "nav.vault": { en: "Family Vault", hi: "पारिवारिक तिजोरी" },
-  "nav.transmission": { en: "Transmission", hi: "हस्तांतरण" },
-  "nav.iepf": { en: "IEPF Claims", hi: "आईईपीएफ दावे" },
+export interface Language {
+  code: Lang;
+  name: string; // native script
+  english: string;
+}
+
+export const LANGUAGES: Language[] = [
+  { code: "en", name: "English", english: "English" },
+  { code: "hi", name: "हिन्दी", english: "Hindi" },
+  { code: "bn", name: "বাংলা", english: "Bengali" },
+  { code: "te", name: "తెలుగు", english: "Telugu" },
+  { code: "mr", name: "मराठी", english: "Marathi" },
+  { code: "ta", name: "தமிழ்", english: "Tamil" },
+  { code: "ur", name: "اردو", english: "Urdu" },
+  { code: "gu", name: "ગુજરાતી", english: "Gujarati" },
+  { code: "kn", name: "ಕನ್ನಡ", english: "Kannada" },
+  { code: "ml", name: "മലയാളം", english: "Malayalam" },
+  { code: "or", name: "ଓଡ଼ିଆ", english: "Odia" },
+  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi" },
+  { code: "as", name: "অসমীয়া", english: "Assamese" },
+  { code: "mai", name: "मैथिली", english: "Maithili" },
+  { code: "sat", name: "ᱥᱟᱱᱛᱟᱲᱤ", english: "Santali" },
+  { code: "ks", name: "کٲشُر", english: "Kashmiri" },
+  { code: "ne", name: "नेपाली", english: "Nepali" },
+  { code: "kok", name: "कोंकणी", english: "Konkani" },
+  { code: "sd", name: "سنڌي", english: "Sindhi" },
+  { code: "doi", name: "डोगरी", english: "Dogri" },
+  { code: "mni", name: "মৈতৈলোন্", english: "Manipuri (Meitei)" },
+  { code: "brx", name: "बड़ो", english: "Bodo" },
+  { code: "sa", name: "संस्कृतम्", english: "Sanskrit" },
+];
+
+export type StringKey =
+  | "nav.dashboard"
+  | "nav.vault"
+  | "nav.transmission"
+  | "nav.iepf"
+  | "hero.eyebrow"
+  | "hero.title"
+  | "hero.subtitle"
+  | "cta.connect"
+  | "cta.demo"
+  | "score.healthy"
+  | "score.action"
+  | "score.clear"
+  | "section.accounts"
+  | "section.atRisk"
+  | "section.protected";
+
+type Dict = Partial<Record<Lang, string>>;
+
+const STRINGS: Record<StringKey, Dict> = {
+  "nav.dashboard": {
+    en: "Wealth Map", hi: "धन मानचित्र", bn: "সম্পদ মানচিত্র", te: "సంపద మ్యాప్",
+    mr: "संपत्ती नकाशा", ta: "செல்வ வரைபடம்", ur: "دولت کا نقشہ", gu: "સંપત્તિ નકશો",
+    kn: "ಸಂಪತ್ತಿನ ನಕ್ಷೆ", ml: "സമ്പത്ത് മാപ്പ്", or: "ସମ୍ପତ୍ତି ମାନଚିତ୍ର", pa: "ਦੌਲਤ ਦਾ ਨਕਸ਼ਾ",
+    as: "সম্পদ মানচিত্ৰ", mai: "धन मानचित्र", sat: "दौलत नक्शा", ks: "دولتُک نَقشہ",
+    ne: "सम्पत्ति नक्सा", kok: "संपत्ती नकाशो", sd: "دولت جو نقشو", doi: "धन नक्शा",
+    mni: "লান্থেং ম্যাপ", brx: "जोथै मानचित्र", sa: "धनमानचित्रम्",
+  },
+  "nav.vault": {
+    en: "Family Vault", hi: "पारिवारिक तिजोरी", bn: "পারিবারিক ভল্ট", te: "కుటుంబ వాల్ట్",
+    mr: "कौटुंबिक तिजोरी", ta: "குடும்ப பெட்டகம்", ur: "خاندانی تجوری", gu: "પારિવારિક તિજોરી",
+    kn: "ಕುಟುಂಬ ಭಂಡಾರ", ml: "കുടുംബ നിലവറ", or: "ପାରିବାରିକ ଭଣ୍ଡାର", pa: "ਪਰਿਵਾਰਕ ਤਿਜੋਰੀ",
+    as: "পাৰিবাৰিক ভল্ট", mai: "पारिवारिक तिजोरी", sat: "परिवार तिजोरी", ks: "خاندانی تِجوری",
+    ne: "पारिवारिक तिजोरी", kok: "कौटुंबिक तिजोरी", sd: "خانداني تيجوري", doi: "परिवारक तिजोरी",
+    mni: "ইমুং ভল্ট", brx: "परिवार थाखो", sa: "कुटुम्बकोशः",
+  },
+  "nav.transmission": {
+    en: "Transmission", hi: "हस्तांतरण", bn: "হস্তান্তর", te: "బదిలీ",
+    mr: "हस्तांतरण", ta: "மாற்றல்", ur: "منتقلی", gu: "હસ્તાંતરણ",
+    kn: "ವರ್ಗಾವಣೆ", ml: "കൈമാറ്റം", or: "ହସ୍ତାନ୍ତର", pa: "ਤਬਾਦਲਾ",
+    as: "হস্তান্তৰ", mai: "हस्तांतरण", sat: "हस्तांतरण", ks: "منتقلی",
+    ne: "हस्तान्तरण", kok: "हस्तांतरण", sd: "منتقلي", doi: "हस्तांतरण",
+    mni: "লান্থেং", brx: "हस्तांतरण", sa: "संक्रमणम्",
+  },
+  "nav.iepf": {
+    en: "IEPF Claims", hi: "आईईपीएफ दावे", bn: "IEPF দাবি", te: "IEPF దావాలు",
+    mr: "IEPF दावे", ta: "IEPF கோரிக்கைகள்", ur: "IEPF دعوے", gu: "IEPF દાવા",
+    kn: "IEPF ದಾವೆಗಳು", ml: "IEPF ക്ലെയിമുകൾ", or: "IEPF ଦାବି", pa: "IEPF ਦਾਅਵੇ",
+    as: "IEPF দাবী", mai: "IEPF दावा", sat: "IEPF दावा", ks: "IEPF دعوے",
+    ne: "IEPF दाबी", kok: "IEPF दावे", sd: "IEPF دعوا", doi: "IEPF दावे",
+    mni: "IEPF দাবী", brx: "IEPF दावा", sa: "IEPF दावा",
+  },
   "hero.eyebrow": {
     en: "SEBI Track B · Investor Rights & Safety",
     hi: "सेबी ट्रैक बी · निवेशक अधिकार और सुरक्षा",
@@ -16,26 +98,92 @@ export const STRINGS = {
   "hero.title": {
     en: "Your family should never lose your wealth.",
     hi: "आपके परिवार को आपकी संपत्ति कभी नहीं खोनी चाहिए।",
+    bn: "আপনার পরিবার যেন কখনো আপনার সম্পদ না হারায়।",
+    te: "మీ కుటుంబం మీ సంపదను ఎప్పటికీ కోల్పోకూడదు.",
+    mr: "तुमच्या कुटुंबाने तुमची संपत्ती कधीही गमावू नये.",
+    ta: "உங்கள் குடும்பம் உங்கள் செல்வத்தை ஒருபோதும் இழக்கக்கூடாது.",
+    ur: "آپ کے خاندان کو آپ کی دولت کبھی نہیں کھونی چاہیے۔",
+    gu: "તમારા પરિવારે તમારી સંપત્તિ ક્યારેય ગુમાવવી ન જોઈએ.",
+    kn: "ನಿಮ್ಮ ಕುಟುಂಬವು ನಿಮ್ಮ ಸಂಪತ್ತನ್ನು ಎಂದಿಗೂ ಕಳೆದುಕೊಳ್ಳಬಾರದು.",
+    ml: "നിങ്ങളുടെ കുടുംബത്തിന് നിങ്ങളുടെ സമ്പത്ത് ഒരിക്കലും നഷ്ടമാകരുത്.",
+    or: "ଆପଣଙ୍କ ପରିବାର ଆପଣଙ୍କ ସମ୍ପତ୍ତି କେବେ ହରାଇବା ଉଚିତ ନୁହେଁ।",
+    pa: "ਤੁਹਾਡੇ ਪਰਿਵਾਰ ਨੂੰ ਤੁਹਾਡੀ ਦੌਲਤ ਕਦੇ ਨਹੀਂ ਗੁਆਉਣੀ ਚਾਹੀਦੀ।",
+    as: "আপোনাৰ পৰিয়ালে আপোনাৰ সম্পদ কেতিয়াও হেৰুৱাব নালাগে।",
+    mai: "अहाँक परिवार कहियो अहाँक संपत्ति नहि गँवाबय चाही।",
+    sat: "अगुना परिवार अगुना दौलत नकबां नहि।",
+    ks: "توہُنٛدِ خاندانَس تۄہہِ سٕنٛز دولت کٲنٛہہ نہٕ گٲژھ گٔژِتھ۔",
+    ne: "तपाईंको परिवारले तपाईंको सम्पत्ति कहिल्यै गुमाउनु हुँदैन।",
+    kok: "तुमच्या कुटुंबान तुमची संपत्ती कधींच गमावची ना।",
+    sd: "توھان جي خاندان کي توھان جي دولت ڪڏهن نه وڃائڻ گهرجي.",
+    doi: "तुंदे परिवार न तुंदी दौलत कदी नीं खोणी चाहिदी।",
+    mni: "নাহাক্তগী ইমুংনা নহাক্তগী লান্থেং কৈদৌনো মাংদনবা য়াদবনি।",
+    brx: "नोंसोरनि थाखोआ नोंसोरनि जोथै माब्लाबो गोमानानो नाङा।",
+    sa: "भवतः कुटुम्बेन भवतः धनं कदापि न नाशनीयम्।",
   },
   "hero.subtitle": {
     en: "Viraasat builds a single, secure map of every account you own — so nominees are in place and nothing becomes unclaimed.",
     hi: "विरासत आपके हर खाते का एक सुरक्षित नक्शा बनाता है — ताकि नामांकित व्यक्ति दर्ज हो और कुछ भी लावारिस न रहे।",
   },
   "cta.connect": {
-    en: "Connect via Account Aggregator",
-    hi: "अकाउंट एग्रीगेटर से जोड़ें",
+    en: "Connect via Account Aggregator", hi: "अकाउंट एग्रीगेटर से जोड़ें",
+    bn: "অ্যাকাউন্ট অ্যাগ্রিগেটর দিয়ে সংযুক্ত করুন", te: "ఖాతా అగ్రిగేటర్ ద్వారా కనెక్ట్ చేయండి",
+    mr: "अकाउंट अॅग्रिगेटरद्वारे जोडा", ta: "கணக்கு திரட்டி மூலம் இணைக்கவும்",
+    ur: "اکاؤنٹ ایگریگیٹر کے ذریعے جوڑیں", gu: "એકાઉન્ટ એગ્રીગેટર દ્વારા જોડો",
+    kn: "ಖಾತೆ ಅಗ್ರಿಗೇಟರ್ ಮೂಲಕ ಸಂಪರ್ಕಿಸಿ", ml: "അക്കൗണ്ട് അഗ്രിഗേറ്റർ വഴി കണക്ട് ചെയ്യുക",
+    or: "ଆକାଉଣ୍ଟ ଏଗ୍ରିଗେଟର ମାଧ୍ୟମରେ ସଂଯୋଗ କରନ୍ତୁ", pa: "ਅਕਾਊਂਟ ਐਗਰੀਗੇਟਰ ਰਾਹੀਂ ਜੁੜੋ",
+    as: "একাউণ্ট এগ্ৰিগেটৰৰ জৰিয়তে সংযোগ কৰক", mai: "अकाउंट एग्रीगेटर से जोड़ू",
+    sat: "अकाउंट एग्रीगेटर से जोड़", ks: "اکاؤنٹ ایگریگیٹر ذریہ جوڑیو",
+    ne: "खाता एग्रिगेटर मार्फत जोड्नुहोस्", kok: "अकाउंट एग्रिगेटरान जोड",
+    sd: "اڪائونٽ ايگريگيٽر ذريعي ڳنڍيو", doi: "अकाउंट एग्रीगेटर से जोड़ो",
+    mni: "অ্যাকাউন্ট এগ্রিগেটরনা লৌথোকতুনা সংযোগ তৌরো", brx: "एकाउन्ट एग्रीगेटरजों संलग्न",
+    sa: "लेखासंकलकेन सह संयोजयतु",
   },
-  "cta.demo": { en: "Try the demo", hi: "डेमो देखें" },
-  "score.healthy": { en: "Nominee Health Score", hi: "नामांकन स्वास्थ्य स्कोर" },
-  "score.action": { en: "Action needed", hi: "कार्रवाई आवश्यक" },
-  "score.clear": { en: "All clear", hi: "सब सुरक्षित" },
-  "section.accounts": { en: "Your accounts", hi: "आपके खाते" },
-  "section.atRisk": { en: "Needs a nominee", hi: "नामांकन आवश्यक" },
-  "section.protected": { en: "Protected", hi: "सुरक्षित" },
-} as const;
-
-export type StringKey = keyof typeof STRINGS;
+  "cta.demo": {
+    en: "Try the demo", hi: "डेमो देखें", bn: "ডেমো দেখুন", te: "డెమో చూడండి",
+    mr: "डेमो पहा", ta: "டெமோ பார்க்கவும்", ur: "ڈیمو دیکھیں", gu: "ડેમો જુઓ",
+    kn: "ಡೆಮೋ ನೋಡಿ", ml: "ഡെമോ കാണുക", or: "ଡେମୋ ଦେଖନ୍ତୁ", pa: "ਡੈਮੋ ਦੇਖੋ",
+    as: "ডেমো চাওক", mai: "डेमो देखू", sat: "डेमो देख", ks: "ڈیمو وُچھِو",
+    ne: "डेमो हेर्नुहोस्", kok: "डेमो पळे", sd: "ڊيمو ڏسو", doi: "डेमो दिक्खो",
+    mni: "ডেমো য়েংবিয়ু", brx: "डेमो नाय", sa: "प्रदर्शनं पश्यतु",
+  },
+  "score.healthy": {
+    en: "Nominee Health Score", hi: "नामांकन स्वास्थ्य स्कोर", bn: "নমিনি স্বাস্থ্য স্কোর",
+    te: "నామినీ ఆరోగ్య స్కోరు", mr: "नामनिर्देशित आरोग्य गुण", ta: "நாமினி நல மதிப்பெண்",
+    ur: "نامزدگی صحت اسکور", gu: "નોમિની આરોગ્ય સ્કોર", kn: "ನಾಮಿನಿ ಆರೋಗ್ಯ ಸ್ಕೋರ್",
+    ml: "നോമിനി ആരോഗ്യ സ്കോർ", or: "ନାମିନି ସ୍ୱାସ୍ଥ୍ୟ ସ୍କୋର", pa: "ਨਾਮਜ਼ਦ ਸਿਹਤ ਸਕੋਰ",
+    as: "নমিনি স্বাস্থ্য স্ক'ৰ", mai: "नामांकन स्वास्थ्य स्कोर", sat: "नामांकन हासो स्कोर",
+    ks: "نامزدگی صحت سکور", ne: "नामांकन स्वास्थ्य स्कोर", kok: "नामनिर्देशित भलायकी गुण",
+    sd: "نامزدگي صحت اسڪور", doi: "नामांकन सेहत स्कोर", mni: "নমিনি হাকচানবা স্কোর",
+    brx: "नामांकन गोसो स्कोर", sa: "नामाङ्कनारोग्यगणना",
+  },
+  "score.action": {
+    en: "Action needed", hi: "कार्रवाई आवश्यक", bn: "পদক্ষেপ প্রয়োজন", te: "చర్య అవసరం",
+    mr: "कारवाई आवश्यक", ta: "நடவடிக்கை தேவை", ur: "کارروائی درکار", gu: "પગલાં જરૂરી",
+    kn: "ಕ್ರಮ ಅಗತ್ಯ", ml: "നടപടി ആവശ്യമാണ്", or: "ପଦକ୍ଷେପ ଆବଶ୍ୟକ", pa: "ਕਾਰਵਾਈ ਲੋੜੀਂਦੀ",
+    as: "পদক্ষেপ প্ৰয়োজন", mai: "कार्रवाई जरूरी", sat: "कार्रवाई जरूरी", ks: "کارروائی ضروٗری",
+    ne: "कारबाही आवश्यक", kok: "कारवाई गरजेची", sd: "ڪارروائي گهربل", doi: "कार्रवाई जरूरी",
+    mni: "থবক তৌবা দরকারী", brx: "कार्रवाई गोनां", sa: "कार्यमावश्यकम्",
+  },
+  "score.clear": {
+    en: "All clear", hi: "सब सुरक्षित", bn: "সব ঠিক আছে", te: "అంతా సరిగ్గా ఉంది",
+    mr: "सर्व सुरक्षित", ta: "எல்லாம் சரி", ur: "سب محفوظ", gu: "બધું સુરક્ષિત",
+    kn: "ಎಲ್ಲಾ ಸುರಕ್ಷಿತ", ml: "എല്ലാം സുരക്ഷിതം", or: "ସବୁ ସୁରକ୍ଷିତ", pa: "ਸਭ ਸੁਰੱਖਿਅਤ",
+    as: "সকলো সুৰক্ষিত", mai: "सब सुरक्षित", sat: "सब सुरक्षित", ks: "سٲری محفوظ",
+    ne: "सबै सुरक्षित", kok: "सगळे सुरक्षित", sd: "سڀ محفوظ", doi: "सब सुरक्षित",
+    mni: "পুম্নমক লেংদনা", brx: "गासै सुरक्षित", sa: "सर्वं सुरक्षितम्",
+  },
+  "section.accounts": {
+    en: "Your accounts", hi: "आपके खाते",
+  },
+  "section.atRisk": {
+    en: "Needs a nominee", hi: "नामांकन आवश्यक",
+  },
+  "section.protected": {
+    en: "Protected", hi: "सुरक्षित",
+  },
+};
 
 export function t(lang: Lang, key: StringKey): string {
-  return STRINGS[key][lang];
+  const dict = STRINGS[key];
+  return dict[lang] ?? dict.en ?? key;
 }

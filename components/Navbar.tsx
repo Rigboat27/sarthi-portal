@@ -1,21 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "./StoreProvider";
-import { t, StringKey } from "@/lib/i18n";
+import { t, StringKey, LANGUAGES } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const NAV: { href: string; key: StringKey; soon?: boolean }[] = [
   { href: "/dashboard", key: "nav.dashboard" },
   { href: "/vault", key: "nav.vault" },
-  { href: "/transmission", key: "nav.transmission", soon: true },
-  { href: "/iepf", key: "nav.iepf", soon: true },
+  { href: "/transmission", key: "nav.transmission" },
+  { href: "/iepf", key: "nav.iepf" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const { lang, setLang } = useStore();
+  const [open, setOpen] = useState(false);
+
+  const current = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/80 backdrop-blur">
@@ -25,16 +29,14 @@ export function Navbar() {
             स
           </span>
           <span className="leading-tight">
-            <span className="block text-base font-bold tracking-tight">
-              Sarthi
-            </span>
+            <span className="block text-base font-bold tracking-tight">Sarthi</span>
             <span className="-mt-1 block text-[11px] font-medium text-ink-400">
               Viraasat · वि·रा·सत
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 sm:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -56,23 +58,48 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <div className="flex rounded-lg border border-ink-200 p-0.5">
-            {(["en", "hi"] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={cn(
-                  "rounded-md px-2.5 py-1 text-xs font-semibold transition-colors",
-                  lang === l
-                    ? "bg-ink-900 text-white"
-                    : "text-ink-500 hover:text-ink-900",
-                )}
+        {/* Language selector */}
+        <div className="relative">
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="flex items-center gap-1.5 rounded-lg border border-ink-200 px-3 py-2 text-sm font-medium text-ink-700 hover:bg-ink-50"
+            aria-haspopup="listbox"
+            aria-expanded={open}
+          >
+            <span aria-hidden>🌐</span>
+            <span>{current.name}</span>
+            <span className="text-ink-400">▾</span>
+          </button>
+
+          {open && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+              <ul
+                role="listbox"
+                className="absolute right-0 z-20 mt-1 max-h-80 w-56 overflow-y-auto rounded-xl border border-ink-200 bg-white py-1 shadow-lg"
               >
-                {l === "en" ? "EN" : "हि"}
-              </button>
-            ))}
-          </div>
+                {LANGUAGES.map((l) => (
+                  <li key={l.code}>
+                    <button
+                      role="option"
+                      aria-selected={l.code === lang}
+                      onClick={() => {
+                        setLang(l.code);
+                        setOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between px-3 py-1.5 text-left text-sm hover:bg-ink-50",
+                        l.code === lang ? "bg-saffron-50 font-semibold text-saffron-700" : "text-ink-700",
+                      )}
+                    >
+                      <span>{l.name}</span>
+                      <span className="text-[11px] text-ink-400">{l.english}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </div>
     </header>

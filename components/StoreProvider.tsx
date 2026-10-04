@@ -13,7 +13,7 @@ import {
   AccountAggregator,
 } from "@/lib/types";
 import { fetchWealthSnapshot } from "@/lib/nominee";
-import { Lang } from "@/lib/i18n";
+import { Lang, LANGUAGES } from "@/lib/i18n";
 
 interface StoreValue {
   snapshot: WealthSnapshot | null;
@@ -41,7 +41,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(SNAPSHOT_KEY);
       if (raw) setSnapshot(JSON.parse(raw) as WealthSnapshot);
       const l = localStorage.getItem(LANG_KEY);
-      if (l === "hi" || l === "en") setLangState(l);
+      if (l && LANGUAGES.some((x) => x.code === l)) setLangState(l as Lang);
     } catch {
       /* ignore */
     }

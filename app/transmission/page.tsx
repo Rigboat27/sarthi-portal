@@ -5,41 +5,55 @@ import Link from "next/link";
 import { api, AffidavitResult, downloadPdf, printText } from "@/lib/api";
 import { TransmissionTracker } from "@/components/TransmissionTracker";
 
-interface FamilyMemberInput {
+interface HeirInput {
   name: string;
+  age: string;
   relationship: string;
-  share: string;
 }
 
 export default function TransmissionPage() {
+  // deceased
   const [deceased, setDeceased] = useState("");
+  const [dateOfDeath, setDateOfDeath] = useState("");
+  const [placeOfDeath, setPlaceOfDeath] = useState("");
+  // applicant
   const [applicant, setApplicant] = useState("");
   const [relationship, setRelationship] = useState("");
+  const [age, setAge] = useState("");
+  const [address, setAddress] = useState("");
+  // shareholding
+  const [company, setCompany] = useState("");
   const [folio, setFolio] = useState("");
-  const [members, setMembers] = useState<FamilyMemberInput[]>([
-    { name: "", relationship: "", share: "" },
+  const [certNos, setCertNos] = useState("");
+  const [distinctiveNos, setDistinctiveNos] = useState("");
+  const [faceValue, setFaceValue] = useState("");
+  const [shares, setShares] = useState("");
+  // heirs
+  const [heirs, setHeirs] = useState<HeirInput[]>([
+    { name: "", age: "", relationship: "" },
   ]);
+
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AffidavitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  function setMember(i: number, patch: Partial<FamilyMemberInput>) {
-    setMembers((ms) => ms.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
+  function setHeir(i: number, patch: Partial<HeirInput>) {
+    setHeirs((hs) => hs.map((h, idx) => (idx === i ? { ...h, ...patch } : h)));
   }
-  function addMember() {
-    setMembers((ms) => [...ms, { name: "", relationship: "", share: "" }]);
+  function addHeir() {
+    setHeirs((hs) => [...hs, { name: "", age: "", relationship: "" }]);
   }
 
   async function generate() {
     setBusy(true);
     setError(null);
     try {
-      const familyTree = members
-        .filter((m) => m.name.trim())
-        .map((m) => ({
-          name: m.name.trim(),
-          relationship: m.relationship.trim() || "heir",
-          share: m.share ? Number(m.share) : null,
+      const familyTree = heirs
+        .filter((h) => h.name.trim())
+        .map((h) => ({
+          name: h.name.trim(),
+          relationship: h.relationship.trim() || "heir",
+          age: h.age.trim() || null,
         }));
       const res = await api<AffidavitResult>("/docs/affidavit", {
         method: "POST",
@@ -47,7 +61,16 @@ export default function TransmissionPage() {
           deceasedName: deceased,
           applicantName: applicant,
           relationship,
-          folioOrDpid: folio || undefined,
+          applicantAge: age.trim() || null,
+          applicantAddress: address.trim() || null,
+          companyName: company.trim() || null,
+          folioOrDpid: folio.trim() || null,
+          certificateNos: certNos.trim() || null,
+          distinctiveNos: distinctiveNos.trim() || null,
+          faceValue: faceValue.trim() || null,
+          numberOfShares: shares.trim() || null,
+          dateOfDeath: dateOfDeath.trim() || null,
+          placeOfDeath: placeOfDeath.trim() || null,
           familyTree,
           noObjectionFrom: [],
         }),
@@ -65,78 +88,86 @@ export default function TransmissionPage() {
       <p className="text-xs font-semibold uppercase tracking-wide text-saffron-600">
         Transmission Copilot
       </p>
-      <h1 className="mt-1 text-2xl font-bold">Generate share-transmission documents</h1>
+      <h1 className="mt-1 text-2xl font-bold">Generate the transmission affidavit</h1>
       <p className="mt-2 text-ink-500">
-        Enter the deceased&apos;s details and family tree. Sarthi builds the
-        affidavit/NOC payload (the PDF renderer is Team B&apos;s engine module).
+        Fill in the details and Sarthi produces the official SEBI affidavit for
+        transmission of shares, ready to print on stamp paper and notarize.
       </p>
 
-      <div className="mt-8 space-y-4 rounded-2xl border border-ink-200 bg-white p-6">
-        <Field label="Deceased account holder's name">
-          <input
-            className="input"
-            value={deceased}
-            onChange={(e) => setDeceased(e.target.value)}
-            placeholder="e.g. Ramesh Sharma"
-          />
-        </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Applicant (your) name">
-            <input
-              className="input"
-              value={applicant}
-              onChange={(e) => setApplicant(e.target.value)}
-            />
+      <div className="mt-8 space-y-6 rounded-2xl border border-ink-200 bg-white p-6">
+        {/* Deceased */}
+        <Section title="Deceased shareholder">
+          <Field label="Full name">
+            <input className="input" value={deceased} onChange={(e) => setDeceased(e.target.value)} placeholder="e.g. Ramesh Sharma" />
           </Field>
-          <Field label="Relationship to deceased">
-            <input
-              className="input"
-              value={relationship}
-              onChange={(e) => setRelationship(e.target.value)}
-              placeholder="e.g. Son / Spouse"
-            />
-          </Field>
-        </div>
-        <Field label="Folio / DP ID (optional)">
-          <input
-            className="input"
-            value={folio}
-            onChange={(e) => setFolio(e.target.value)}
-          />
-        </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Date of death">
+              <input className="input" value={dateOfDeath} onChange={(e) => setDateOfDeath(e.target.value)} placeholder="e.g. 12 June 2025" />
+            </Field>
+            <Field label="Place of death">
+              <input className="input" value={placeOfDeath} onChange={(e) => setPlaceOfDeath(e.target.value)} placeholder="e.g. Mumbai" />
+            </Field>
+          </div>
+        </Section>
 
-        <div className="border-t border-ink-100 pt-4">
-          <p className="mb-2 text-sm font-medium text-ink-600">Other legal heirs</p>
-          {members.map((m, i) => (
-            <div key={i} className="mb-2 grid gap-2 sm:grid-cols-[1fr_1fr_90px]">
-              <input
-                className="input"
-                placeholder="Name"
-                value={m.name}
-                onChange={(e) => setMember(i, { name: e.target.value })}
-              />
-              <input
-                className="input"
-                placeholder="Relationship"
-                value={m.relationship}
-                onChange={(e) => setMember(i, { relationship: e.target.value })}
-              />
-              <input
-                className="input"
-                placeholder="Share %"
-                inputMode="numeric"
-                value={m.share}
-                onChange={(e) => setMember(i, { share: e.target.value })}
-              />
+        {/* Applicant */}
+        <Section title="Applicant (you)">
+          <Field label="Your full name">
+            <input className="input" value={applicant} onChange={(e) => setApplicant(e.target.value)} placeholder="e.g. Priya Sharma" />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Relation to deceased">
+              <input className="input" value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="e.g. Spouse / Son / Daughter" />
+            </Field>
+            <Field label="Your age">
+              <input className="input" value={age} onChange={(e) => setAge(e.target.value)} placeholder="e.g. 38" />
+            </Field>
+          </div>
+          <Field label="Residential address">
+            <input className="input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g. 12 MG Road, Mumbai" />
+          </Field>
+        </Section>
+
+        {/* Shareholding */}
+        <Section title="Shareholding details">
+          <Field label="Company name">
+            <input className="input" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Reliance Industries Ltd" />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Folio No.">
+              <input className="input" value={folio} onChange={(e) => setFolio(e.target.value)} placeholder="e.g. 98765432/44" />
+            </Field>
+            <Field label="Number of shares">
+              <input className="input" value={shares} onChange={(e) => setShares(e.target.value)} placeholder="e.g. 100" />
+            </Field>
+            <Field label="Certificate No(s).">
+              <input className="input" value={certNos} onChange={(e) => setCertNos(e.target.value)} placeholder="e.g. 112233 / 445566" />
+            </Field>
+            <Field label="Distinctive Nos.">
+              <input className="input" value={distinctiveNos} onChange={(e) => setDistinctiveNos(e.target.value)} placeholder="e.g. 1001 to 1100" />
+            </Field>
+          </div>
+          <Field label="Face value (Rs. per share)">
+            <input className="input" value={faceValue} onChange={(e) => setFaceValue(e.target.value)} placeholder="e.g. 10" />
+          </Field>
+        </Section>
+
+        {/* Heirs */}
+        <Section title="Legal heirs (family tree)">
+          <p className="text-sm text-ink-500">
+            List every legal heir, including yourself if you inherit jointly.
+          </p>
+          {heirs.map((h, i) => (
+            <div key={i} className="mb-2 grid gap-2 sm:grid-cols-[1fr_70px_1fr]">
+              <input className="input" placeholder="Name" value={h.name} onChange={(e) => setHeir(i, { name: e.target.value })} />
+              <input className="input" placeholder="Age" value={h.age} onChange={(e) => setHeir(i, { age: e.target.value })} />
+              <input className="input" placeholder="Relationship" value={h.relationship} onChange={(e) => setHeir(i, { relationship: e.target.value })} />
             </div>
           ))}
-          <button
-            onClick={addMember}
-            className="text-sm font-medium text-saffron-600 hover:text-saffron-700"
-          >
+          <button onClick={addHeir} className="text-sm font-medium text-saffron-600 hover:text-saffron-700">
             + Add heir
           </button>
-        </div>
+        </Section>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -145,16 +176,14 @@ export default function TransmissionPage() {
           disabled={busy || !deceased.trim() || !applicant.trim()}
           className="w-full rounded-xl bg-ink-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink-800 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "Generating…" : "Generate affidavit payload"}
+          {busy ? "Generating…" : "Generate affidavit (PDF)"}
         </button>
       </div>
 
       {result && (
         <div className="mt-6 space-y-4">
           <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6">
-            <h3 className="mb-3 font-bold text-blue-900">
-              Dynamic transmission checklist
-            </h3>
+            <h3 className="mb-3 font-bold text-blue-900">Next steps checklist</h3>
             <ol className="list-inside list-decimal space-y-1.5 text-sm text-blue-800">
               {result.checklist.map((item, i) => (
                 <li key={i}>{item}</li>
@@ -166,11 +195,9 @@ export default function TransmissionPage() {
             <div className="flex items-center gap-3">
               <span className="text-xl">🧾</span>
               <div>
-                <p className="font-semibold">Affidavit draft ready for notarization</p>
+                <p className="font-semibold">Affidavit draft — ready for stamp paper</p>
                 <p className="text-xs text-ink-400">
-                  {result.mock
-                    ? "Mock draft — connect a Gemini key to the engine for the live generation."
-                    : "Generated by the engine."}
+                  Official SEBI format. Download as PDF and print on ₹100 stamp paper.
                 </p>
               </div>
             </div>
@@ -188,18 +215,14 @@ export default function TransmissionPage() {
               </button>
               {result.pdfBase64 && (
                 <button
-                  onClick={() =>
-                    downloadPdf(result.pdfBase64!, "affidavit-transmission.pdf")
-                  }
+                  onClick={() => downloadPdf(result.pdfBase64!, "affidavit-transmission.pdf")}
                   className="rounded-xl bg-forest-600 px-4 py-2 text-sm font-semibold text-white hover:bg-forest-700"
                 >
                   ⬇ Download PDF
                 </button>
               )}
               <button
-                onClick={() =>
-                  printText("Affidavit for Transmission of Shares", result.affidavitText)
-                }
+                onClick={() => printText("Affidavit for Transmission of Shares", result.affidavitText)}
                 className="rounded-xl border border-ink-300 bg-white px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
               >
                 🖨 Print
@@ -219,6 +242,15 @@ export default function TransmissionPage() {
       >
         ← Back to Wealth Map
       </Link>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4 border-t border-ink-100 pt-4 first:border-t-0 first:pt-0">
+      <p className="text-sm font-bold text-ink-800">{title}</p>
+      {children}
     </div>
   );
 }
