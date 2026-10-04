@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
 import { t } from "@/lib/i18n";
@@ -34,6 +34,11 @@ export default function VaultPage() {
     accounts: Array<{ provider: string; label: string; maskedNumber?: string; nominee?: string; value?: number }>;
   } | null>(null);
   const [decryptError, setDecryptError] = useState<string | null>(null);
+
+  // Pre-fill the account holder's name from the connected Wealth Map.
+  useEffect(() => {
+    if (snapshot?.ownerName && !owner) setOwner(snapshot.ownerName);
+  }, [snapshot?.ownerName, owner]);
 
   async function handleVaultFile(file: File) {
     setDecryptError(null);
