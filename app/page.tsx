@@ -40,9 +40,9 @@ export default function HomePage() {
 
           <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
             {[
-              ["100%", "Consent-based"],
-              ["0", "Stock tips"],
-              ["24×7", "On your side"],
+              ["100%", t(lang, "stat.consent")],
+              ["0", t(lang, "stat.tips")],
+              ["24×7", t(lang, "stat.side")],
             ].map(([v, l]) => (
               <div key={l}>
                 <dt className="text-2xl font-bold text-ink-900">{v}</dt>
@@ -102,23 +102,23 @@ export default function HomePage() {
       </section>
 
       <section className="border-t border-ink-200 py-14">
-        <h2 className="text-center text-2xl font-bold">How it works</h2>
+        <h2 className="text-center text-2xl font-bold">{t(lang, "how.title")}</h2>
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {[
             {
               n: "1",
-              t: "Give consent",
-              d: "Pick an Account Aggregator like OneMoney and approve a one-time, purpose-bound consent. No passwords shared.",
+              t: t(lang, "how.1.title"),
+              d: t(lang, "how.1.desc"),
             },
             {
               n: "2",
-              t: "We map everything",
-              d: "Banks, demat, mutual funds and insurance appear in one place with their nominee status clearly flagged.",
+              t: t(lang, "how.2.title"),
+              d: t(lang, "how.2.desc"),
             },
             {
               n: "3",
-              t: "Fix & secure",
-              d: "Follow direct links to register missing nominees, then generate an encrypted Legacy Vault for your family.",
+              t: t(lang, "how.3.title"),
+              d: t(lang, "how.3.desc"),
             },
           ].map((s) => (
             <div

@@ -24,6 +24,8 @@ export default function TransmissionPage() {
   // applicant
   const [applicant, setApplicant] = useState("");
   const [relationship, setRelationship] = useState("");
+  const [gender, setGender] = useState("");
+  const [fatherName, setFatherName] = useState("");
   const [age, setAge] = useState("");
   const [address, setAddress] = useState("");
   // shareholding
@@ -82,6 +84,8 @@ export default function TransmissionPage() {
           deceasedName: deceased,
           applicantName: applicant,
           relationship,
+          gender: gender || null,
+          fatherName: fatherName.trim() || null,
           applicantAge: age.trim() || null,
           applicantAddress: address.trim() || null,
           companyName: company.trim() || null,
@@ -187,6 +191,16 @@ export default function TransmissionPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t(lang, "form.relation")}>
               <input className="input" value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="e.g. Spouse / Son / Daughter" />
+            </Field>
+            <Field label="Gender">
+              <select className="input" value={gender} onChange={(e) => setGender(e.target.value)}>
+                <option value="">Select…</option>
+                <option value="male">Male (son)</option>
+                <option value="female">Female (daughter)</option>
+              </select>
+            </Field>
+            <Field label="Father's name">
+              <input className="input" value={fatherName} onChange={(e) => setFatherName(e.target.value)} placeholder="e.g. Ramprasad Sharma" />
             </Field>
             <Field label={t(lang, "form.age")}>
               <input className="input" value={age} onChange={(e) => setAge(e.target.value)} placeholder="e.g. 38" />

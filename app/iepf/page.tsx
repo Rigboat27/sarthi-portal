@@ -241,6 +241,17 @@ export default function IepfPage() {
                     <p className="text-xs text-ink-500">
                       {c.sector} · RTA: {c.rta}
                     </p>
+                    {c.supportEmail && (
+                      <p className="text-xs text-ink-600">
+                        RTA email:{" "}
+                        <a
+                          href={`mailto:${c.supportEmail}`}
+                          className="font-semibold text-ink-800 underline"
+                        >
+                          {c.supportEmail}
+                        </a>
+                      </p>
+                    )}
                     <a
                       href={`https://www.google.com/search?q=${encodeURIComponent(
                         c.name + " IEPF nodal officer",
@@ -263,7 +274,15 @@ export default function IepfPage() {
       {/* Claim readiness checklist */}
       <div className="mt-6 rounded-2xl border border-ink-200 bg-white p-6">
         <h2 className="mb-3 text-lg font-bold">3 · Claim readiness checklist</h2>
-        <Checklist items={IEPF_CHECKLIST} storageKey="sarthi.iepf.checklist" />
+        <Checklist
+          items={IEPF_CHECKLIST}
+          storageKey="sarthi.iepf.checklist"
+          autoCheck={[
+            ...(ocr ? ["identity", "entitlement"] : []),
+            ...(nameAff ? ["affidavit"] : []),
+            ...(nodal && nodal.companies.length ? ["nodal"] : []),
+          ]}
+        />
       </div>
 
       <Link

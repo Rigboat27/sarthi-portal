@@ -81,7 +81,17 @@ export type StringKey =
   | "form.certNos"
   | "form.distinctiveNos"
   | "form.faceValue"
-  | "form.addHeir";
+  | "form.addHeir"
+  | "how.title"
+  | "how.1.title"
+  | "how.2.title"
+  | "how.3.title"
+  | "stat.consent"
+  | "stat.tips"
+  | "stat.side"
+  | "how.1.desc"
+  | "how.2.desc"
+  | "how.3.desc";
 
 type Dict = Partial<Record<Lang, string>>;
 
@@ -307,6 +317,48 @@ const STRINGS: Record<StringKey, Dict> = {
   "form.distinctiveNos": { en: "Distinctive Nos.", hi: "विशिष्ट संख्या" },
   "form.faceValue": { en: "Face value (Rs. per share)", hi: "अंकित मूल्य (₹ प्रति शेयर)" },
   "form.addHeir": { en: "+ Add heir", hi: "+ उत्तराधिकारी जोड़ें" },
+  "how.title": {
+    en: "How it works", hi: "यह कैसे काम करता है", bn: "এটি কীভাবে কাজ করে",
+    te: "ఇది ఎలా పని చేస్తుంది", mr: "हे कसे काम करते", ta: "இது எப்படி செயல்படுகிறது",
+    ur: "یہ کیسے کام کرتا ہے", gu: "આ કેવી રીતે કામ કરે છે", kn: "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+    ml: "ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു", or: "ଏହା କିପରି କାର୍ଯ୍ୟ କରେ", pa: "ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
+    as: "এইটো কেনেকৈ কাম কৰে", ne: "यो कसरी काम गर्छ", sa: "इदं कथं कार्यं करोति",
+  },
+  "how.1.title": {
+    en: "Give consent", hi: "सहमति दें", bn: "সম্মতি দিন", te: "సమ్మతి ఇవ్వండి",
+    mr: "संमती द्या", ta: "சம்மதம் கொடுங்கள்", ur: "رضامندی دیں", gu: "સંમતિ આપો",
+    kn: "ಸಮ್ಮತಿ ನೀಡಿ", ml: "സമ്മതം നൽകുക", or: "ସମ୍ମତି ଦିଅନ୍ତୁ", pa: "ਸਹਿਮਤੀ ਦਿਓ",
+    as: "সন্মতি দিয়ক", ne: "सहमति दिनुहोस्", sa: "सम्मतिं ददातु",
+  },
+  "how.2.title": {
+    en: "We map everything", hi: "हम सब कुछ मैप करते हैं", bn: "আমরা সবকিছু ম্যাপ করি",
+    te: "మేము అన్నీ మ్యాప్ చేస్తాము", mr: "आम्ही सर्वकाही नकाशात टाकतो", ta: "நாங்கள் எல்லாவற்றையும் வரைபடமாக்குகிறோம்",
+    ur: "ہم سب کچھ نقشہ بناتے ہیں", gu: "અમે બધું નકશો બનાવીએ છીએ", kn: "ನಾವು ಎಲ್ಲವನ್ನೂ ನಕ್ಷೆ ಮಾಡುತ್ತೇವೆ",
+    ml: "ഞങ്ങൾ എല്ലാം മാപ്പ് ചെയ്യുന്നു", or: "ଆମେ ସବୁକିଛି ମାନଚିତ୍ର କରୁ", pa: "ਅਸੀਂ ਸਭ ਕੁਝ ਨਕਸ਼ਾ ਬਣਾਉਂਦੇ ਹਾਂ",
+    as: "আমি সকলো মেপ কৰোঁ", ne: "हामी सबै नक्सा बनाउँछौं", sa: "वयं सर्वं मानचित्रयामः",
+  },
+  "how.3.title": {
+    en: "Fix & secure", hi: "सुधारें और सुरक्षित करें", bn: "ঠিক করুন ও সুরক্ষিত করুন",
+    te: "సరిచేసి సురక్షితం చేయండి", mr: "दुरुस्त करा व सुरक्षित करा", ta: "சரிசெய்து பாதுகாக்கவும்",
+    ur: "درست کریں اور محفوظ کریں", gu: "સુધારો અને સુરક્ષિત કરો", kn: "ಸರಿಪಡಿಸಿ ಸುರಕ್ಷಿತಗೊಳಿಸಿ",
+    ml: "ശരിയാക്കി സുരക്ഷിതമാക്കുക", or: "ଠିକ କରି ସୁରକ୍ଷିତ କରନ୍ତୁ", pa: "ਠੀਕ ਕਰੋ ਅਤੇ ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    as: "ঠিক কৰি সুৰক্ষিত কৰক", ne: "सच्याउनुहोस् र सुरक्षित गर्नुहोस्", sa: "संशोध्य सुरक्षयतु",
+  },
+  "stat.consent": { en: "Consent-based", hi: "सहमति-आधारित" },
+  "stat.tips": { en: "Stock tips", hi: "शेयर सुझाव" },
+  "stat.side": { en: "On your side", hi: "आपकी तरफ" },
+  "how.1.desc": {
+    en: "Pick an Account Aggregator like OneMoney and approve a one-time, purpose-bound consent. No passwords shared.",
+    hi: "वनमनी जैसा अकाउंट एग्रीगेटर चुनें और एक बार की, उद्देश्य-सीमित सहमति दें। कोई पासवर्ड साझा नहीं।",
+  },
+  "how.2.desc": {
+    en: "Banks, demat, mutual funds and insurance appear in one place with their nominee status clearly flagged.",
+    hi: "बैंक, डीमैट, म्यूचुअल फंड और बीमा एक जगह दिखते हैं, नामांकन स्थिति स्पष्ट चिह्नित होती है।",
+  },
+  "how.3.desc": {
+    en: "Follow direct links to register missing nominees, then generate an encrypted Legacy Vault for your family.",
+    hi: "गायब नामांकन दर्ज करने के लिए सीधे लिंक का पालन करें, फिर परिवार के लिए एन्क्रिप्टेड विरासत तिजोरी बनाएं।",
+  },
 };
 
 export function t(lang: Lang, key: StringKey): string {

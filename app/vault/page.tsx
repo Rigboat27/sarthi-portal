@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/components/StoreProvider";
 import { t } from "@/lib/i18n";
+import { api, downloadPdf } from "@/lib/api";
 import {
   createLegacyVault,
   renderVaultHtml,
@@ -71,6 +72,27 @@ export default function VaultPage() {
     a.download = "sarthi-viraasat-legacy-vault.html";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  async function downloadVaultPdf() {
+    try {
+      const accounts = snapshot!.holdings.map((h) => ({
+        provider: h.provider,
+        label: h.label,
+        maskedNumber: h.maskedNumber ?? "",
+        value: h.value ?? 0,
+        nomineeName: h.nominee?.verified
+          ? `${h.nominee.name} (${h.nominee.relationship})`
+          : null,
+      }));
+      const res = await api<{ pdfBase64: string }>("/docs/vault-pdf", {
+        method: "POST",
+        body: JSON.stringify({ owner: owner || "Account Holder", accounts }),
+      });
+      downloadPdf(res.pdfBase64, "sarthi-viraasat-legacy-vault.pdf");
+    } catch (e) {
+      console.error("vault pdf failed", e);
+    }
   }
 
   return (
@@ -170,6 +192,12 @@ export default function VaultPage() {
             className="mt-4 w-full rounded-xl bg-forest-600 px-6 py-3 text-sm font-semibold text-white hover:bg-forest-700"
           >
             ⬇ Download Legacy Vault (.html)
+          </button>
+          <button
+            onClick={downloadVaultPdf}
+            className="mt-2 w-full rounded-xl bg-ink-900 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800"
+          >
+            ⬇ Download PDF (printable summary)
           </button>
           <p className="mt-3 text-xs text-forest-700">
             Share this file with <strong>{trustedContact || "your trusted contact"}</strong> along

@@ -61,6 +61,7 @@ export interface NodalCompany {
   ticker: string;
   sector: string;
   rta: string;
+  supportEmail?: string | null;
 }
 
 export interface NodalResponse {

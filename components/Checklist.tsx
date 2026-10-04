@@ -12,9 +12,12 @@ export interface ChecklistItem {
 export function Checklist({
   items,
   storageKey,
+  autoCheck = [],
 }: {
   items: ChecklistItem[];
   storageKey: string;
+  /** Item ids to force-check (e.g. when a prior step auto-completes). */
+  autoCheck?: string[];
 }) {
   const [done, setDone] = useState<Record<string, boolean>>({});
 
@@ -26,6 +29,17 @@ export function Checklist({
       /* ignore */
     }
   }, [storageKey]);
+
+  // Auto-check any items the parent marks as complete.
+  const autoKey = autoCheck.join(",");
+  useEffect(() => {
+    if (!autoKey) return;
+    setDone((d) => {
+      const next = { ...d };
+      for (const id of autoCheck) next[id] = true;
+      return next;
+    });
+  }, [autoKey]);
 
   useEffect(() => {
     try {
