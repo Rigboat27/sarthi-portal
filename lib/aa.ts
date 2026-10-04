@@ -20,7 +20,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 185400,
     nominee: { name: "Priya Sharma", relationship: "Spouse", verified: true },
     detail: "Salary account · Bengaluru",
-    fixUrl: "https://www.hdfcbank.com/personal/ways-to-bank/nominee",
+    fixUrl: "https://www.hdfcbank.com",
   },
   {
     id: "bank-sbi-savings",
@@ -33,7 +33,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 42300,
     nominee: undefined,
     detail: "Home-town branch · Lucknow",
-    fixUrl: "https://retail.onlinesbi.sbi/nominee.html",
+    fixUrl: "https://www.onlinesbi.sbi",
   },
   {
     id: "bank-icici-fd",
@@ -46,7 +46,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 250000,
     nominee: { name: "Priya Sharma", relationship: "Spouse", verified: true },
     detail: "Matures Apr 2027",
-    fixUrl: "https://www.icicibank.com/nominee",
+    fixUrl: "https://www.icicibank.com",
   },
   {
     id: "demat-cdsl",
@@ -59,7 +59,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 612750,
     nominee: undefined,
     detail: "Via Zerodha · 14 holdings",
-    fixUrl: "https://www.cdslindia.com/cas/Nominee.html",
+    fixUrl: "https://www.cdslindia.com/Bo/NominationLogin.aspx",
   },
   {
     id: "demat-nsdl",
@@ -72,7 +72,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 98000,
     nominee: { name: "Arjun Sharma", relationship: "Son", verified: true },
     detail: "Via HDFC Securities",
-    fixUrl: "https://nsdl.co.in/nominee.php",
+    fixUrl: "https://eservices.nsdl.com/instademat-kyc-nomination/",
   },
   {
     id: "mf-cams-1",
@@ -85,7 +85,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 305200,
     nominee: { name: "Priya Sharma", relationship: "Spouse", verified: true },
     detail: "SIP active · ₹5,000/mo",
-    fixUrl: "https://www.mfcentral.com",
+    fixUrl: "https://www.camsonline.com/Investors/Service-requests/Nomination/Nomination-Opt-in_&_Opt-out",
   },
   {
     id: "mf-kfintech-1",
@@ -98,7 +98,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 120000,
     nominee: undefined,
     detail: "Lock-in ended 2025",
-    fixUrl: "https://www.mfcentral.com",
+    fixUrl: "https://mfs.kfintech.com/investor/general/NCTNomineeUpdation",
   },
   {
     id: "insurance-lic",
@@ -111,7 +111,7 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 1000000,
     nominee: { name: "Priya Sharma", relationship: "Spouse", verified: true },
     detail: "Sum assured ₹10L",
-    fixUrl: "https://licindia.in/nominee",
+    fixUrl: "https://licindia.in",
   },
   {
     id: "ppf-sbi",
@@ -124,6 +124,6 @@ export const MOCK_PORTFOLIO: Holding[] = [
     value: 347800,
     nominee: undefined,
     detail: "Matures 2032",
-    fixUrl: "https://retail.onlinesbi.sbi/nominee.html",
+    fixUrl: "https://www.onlinesbi.sbi",
   },
 ];

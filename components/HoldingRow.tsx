@@ -4,6 +4,7 @@ import { Holding } from "@/lib/types";
 import { ACCOUNT_TYPE_META } from "@/lib/types";
 import { formatINR } from "@/lib/utils";
 import { NomineeChip } from "./NomineeGauge";
+import { ProviderLogo } from "./ProviderLogo";
 import { cn } from "@/lib/utils";
 
 export function HoldingRow({ holding }: { holding: Holding }) {
@@ -17,8 +18,12 @@ export function HoldingRow({ holding }: { holding: Holding }) {
         hasNominee ? "border-ink-200" : "border-red-200 bg-red-50/40",
       )}
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-ink-100 text-xl">
-        {meta.icon}
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white ring-1 ring-ink-100">
+        <ProviderLogo
+          code={holding.providerCode}
+          fallback={meta.icon}
+          className="h-7 w-7"
+        />
       </span>
 
       <div className="min-w-0 flex-1">

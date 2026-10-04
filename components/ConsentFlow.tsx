@@ -7,6 +7,7 @@ import {
   AccountAggregator,
 } from "@/lib/types";
 import { useStore } from "./StoreProvider";
+import { ProviderLogo } from "./ProviderLogo";
 import { cn } from "@/lib/utils";
 
 type Step = "aggregator" | "scopes" | "otp" | "connecting" | "done";
@@ -94,11 +95,8 @@ export function ConsentFlow({ onClose }: { onClose: () => void }) {
                       : "border-ink-200 hover:border-ink-300 hover:bg-ink-50",
                   )}
                 >
-                  <span
-                    className="flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold text-white"
-                    style={{ backgroundColor: aa.color }}
-                  >
-                    {aa.glyph}
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white ring-1 ring-ink-200">
+                    <ProviderLogo code={aa.id} fallback={aa.glyph} className="h-7 w-7" />
                   </span>
                   <span className="flex-1">
                     <span className="block font-semibold">{aa.name}</span>

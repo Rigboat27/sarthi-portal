@@ -6,7 +6,9 @@ import { api, AffidavitResult, downloadPdf, printText } from "@/lib/api";
 import { TransmissionTracker } from "@/components/TransmissionTracker";
 import { useStore } from "@/components/StoreProvider";
 import { t } from "@/lib/i18n";
-import { ACCOUNT_TYPE_META } from "@/lib/types";
+import { ACCOUNT_TYPE_META, Holding } from "@/lib/types";
+import { formatINR } from "@/lib/utils";
+import { ProviderLogo } from "@/components/ProviderLogo";
 
 interface HeirInput {
   name: string;
@@ -45,11 +47,15 @@ export default function TransmissionPage() {
   const transmittable = (snapshot?.holdings ?? []).filter(
     (h) => h.type === "demat" || h.type === "mutual_fund",
   );
+  const [selected, setSelected] = useState<Holding | null>(null);
 
   function applyHolding(id: string) {
     const h = transmittable.find((x) => x.id === id);
     if (!h) return;
+    setSelected(h);
     setFolio(h.identifier ?? "");
+    // The holding carries no physical-certificate details, so folio is the
+    // only field we can populate directly; the rest is filled from the cert.
   }
 
   function setHeir(i: number, patch: Partial<HeirInput>) {
@@ -132,6 +138,29 @@ export default function TransmissionPage() {
                 </option>
               ))}
             </select>
+
+            {selected && (
+              <div className="flex items-center gap-3 rounded-xl bg-forest-50 p-3 text-sm">
+                <ProviderLogo
+                  code={selected.providerCode}
+                  fallback={ACCOUNT_TYPE_META[selected.type].icon}
+                  className="h-6 w-6"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">
+                    {selected.provider} · {selected.label}
+                  </p>
+                  <p className="truncate text-xs text-ink-500">
+                    {selected.maskedNumber ? `# ${selected.maskedNumber}` : ""}
+                    {selected.identifier ? ` · Folio ${selected.identifier}` : ""}
+                    {selected.value ? ` · ${formatINR(selected.value)}` : ""}
+                  </p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-forest-700">
+                  ✓ Folio pre-filled
+                </span>
+              </div>
+            )}
           </Section>
         )}
 
