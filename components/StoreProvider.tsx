@@ -23,6 +23,7 @@ interface StoreValue {
   setLang: (l: Lang) => void;
   connect: (aggregator: AccountAggregator, scopes: string[]) => Promise<void>;
   disconnect: () => void;
+  setOwnerName: (name: string) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -81,6 +82,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const disconnect = useCallback(() => setSnapshot(null), []);
 
+  const setOwnerName = useCallback((name: string) => {
+    setSnapshot((s) => (s ? { ...s, ownerName: name } : s));
+  }, []);
+
   const value = useMemo<StoreValue>(
     () => ({
       snapshot,
@@ -90,8 +95,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setLang,
       connect,
       disconnect,
+      setOwnerName,
     }),
-    [snapshot, connecting, lang, setLang, connect, disconnect],
+    [snapshot, connecting, lang, setLang, connect, disconnect, setOwnerName],
   );
 
   return (

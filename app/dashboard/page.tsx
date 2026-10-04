@@ -23,7 +23,7 @@ export default function DashboardPage() {
 }
 
 function DashboardInner() {
-  const { snapshot, connected, disconnect, lang } = useStore();
+  const { snapshot, connected, disconnect, lang, setOwnerName } = useStore();
   const searchParams = useSearchParams();
   const [showConsent, setShowConsent] = useState(false);
 
@@ -80,6 +80,17 @@ function DashboardInner() {
               {snapshot.consentId}
             </code>
           </p>
+          <div className="mt-3 flex items-center gap-2">
+            <label className="text-sm font-medium text-ink-600">
+              Account holder&apos;s name
+            </label>
+            <input
+              value={snapshot.ownerName ?? ""}
+              onChange={(e) => setOwnerName(e.target.value)}
+              placeholder="e.g. Ramesh Sharma"
+              className="input w-56"
+            />
+          </div>
         </div>
         <div className="flex gap-2">
           <button
