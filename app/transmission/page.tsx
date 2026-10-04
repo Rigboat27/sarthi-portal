@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { api, AffidavitResult, downloadPdf, printText } from "@/lib/api";
 import { TransmissionTracker } from "@/components/TransmissionTracker";
+import { useStore } from "@/components/StoreProvider";
+import { ACCOUNT_TYPE_META } from "@/lib/types";
 
 interface HeirInput {
   name: string;
@@ -36,6 +38,18 @@ export default function TransmissionPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AffidavitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Pull account data from the connected Wealth Map (Account Aggregator).
+  const { snapshot, connected } = useStore();
+  const transmittable = (snapshot?.holdings ?? []).filter(
+    (h) => h.type === "demat" || h.type === "mutual_fund",
+  );
+
+  function applyHolding(id: string) {
+    const h = transmittable.find((x) => x.id === id);
+    if (!h) return;
+    setFolio(h.identifier ?? "");
+  }
 
   function setHeir(i: number, patch: Partial<HeirInput>) {
     setHeirs((hs) => hs.map((h, idx) => (idx === i ? { ...h, ...patch } : h)));
@@ -95,6 +109,31 @@ export default function TransmissionPage() {
       </p>
 
       <div className="mt-8 space-y-6 rounded-2xl border border-ink-200 bg-white p-6">
+        {/* AA-connected account picker */}
+        {connected && transmittable.length > 0 && (
+          <Section title="Pull from your Wealth Map">
+            <p className="text-sm text-ink-500">
+              Your Account Aggregator data is connected — pick an account to
+              pre-fill the folio instead of typing it.
+            </p>
+            <select
+              className="input"
+              defaultValue=""
+              onChange={(e) => applyHolding(e.target.value)}
+            >
+              <option value="" disabled>
+                Select a demat / mutual fund account…
+              </option>
+              {transmittable.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {ACCOUNT_TYPE_META[h.type].icon} {h.provider} · {h.label}
+                  {h.maskedNumber ? ` (${h.maskedNumber})` : ""}
+                </option>
+              ))}
+            </select>
+          </Section>
+        )}
+
         {/* Deceased */}
         <Section title="Deceased shareholder">
           <Field label="Full name">
