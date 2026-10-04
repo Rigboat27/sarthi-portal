@@ -114,8 +114,9 @@ export async function createLegacyVault(
   };
 }
 
-/** Renders a self-contained, printable HTML "Legacy Vault" file for download. */
+/** Renders a self-contained HTML "Legacy Vault" that decrypts in-place with the passphrase. */
 export function renderVaultHtml(artifact: VaultArtifact): string {
+  const artifactJson = JSON.stringify(artifact);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -132,11 +133,17 @@ export function renderVaultHtml(artifact: VaultArtifact): string {
   h1 { margin: 0 0 4px; font-size: 22px; display:flex; align-items:center; gap:10px; }
   .badge { background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700;
            padding: 4px 10px; border-radius: 999px; }
-  .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; }
-  pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 12px;
-        overflow-x: auto; font-size: 12px; line-height: 1.5; }
+  .meta { color: #64748b; font-size: 13px; margin-bottom: 20px; }
+  .unlock { display:flex; gap:8px; margin: 16px 0; }
+  input { flex:1; padding: 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px; }
+  button { padding: 12px 18px; border:0; border-radius:10px; background:#16a34a; color:#fff;
+           font-weight:700; cursor:pointer; }
+  button:hover { background:#15803d; }
+  table { width:100%; border-collapse:collapse; margin-top:12px; font-size:14px; }
+  th, td { text-align:left; padding:10px; border-bottom:1px solid #e2e8f0; }
+  th { background:#f1f5f9; }
+  .err { color:#dc2626; }
   .foot { margin-top: 24px; font-size: 12px; color: #94a3b8; }
-  code { word-break: break-all; }
 </style>
 </head>
 <body>
@@ -145,17 +152,70 @@ export function renderVaultHtml(artifact: VaultArtifact): string {
     <div class="meta">
       Owner: <strong>${escapeHtml(artifact.owner)}</strong> ·
       Generated: ${new Date(artifact.createdAt).toLocaleString()} ·
-      Source: ${escapeHtml(artifact.aggregator)} (AA)
+      ${artifact.accountCount} accounts
     </div>
-    <p>This file contains an <strong>AES-GCM encrypted</strong> snapshot of the
-       account-holder's financial footprint (${artifact.accountCount} accounts).
-       Share it only with a trusted family member who knows the passphrase.</p>
-    <pre><code>${escapeHtml(JSON.stringify(artifact, null, 2))}</code></pre>
-    <div class="foot">
-      Decrypt in the Sarthi Viraasat app using the Family Vault passphrase.
-      Format: ${artifact.format}
+    <p>This file is <strong>AES-GCM encrypted</strong>. Enter the Family Vault
+       passphrase to reveal the account-holder's financial footprint.</p>
+    <div class="unlock">
+      <input type="password" id="passphrase" placeholder="Family Vault passphrase" />
+      <button id="unlockBtn">🔓 Decrypt</button>
     </div>
+    <div id="output"></div>
+    <div class="foot">Format: ${artifact.format} · Share only with a trusted family member.</div>
   </div>
+
+<script>
+const ARTIFACT = ${artifactJson};
+
+function fromB64(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function inr(v) {
+  return v ? '₹' + Number(v).toLocaleString('en-IN') : '—';
+}
+
+async function decrypt(passphrase) {
+  const enc = new TextEncoder();
+  const salt = fromB64(ARTIFACT.salt);
+  const baseKey = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations: ARTIFACT.iterations, hash:'SHA-256' },
+    baseKey, { name:'AES-GCM', length:256 }, false, ['decrypt']
+  );
+  const plainBuf = await crypto.subtle.decrypt(
+    { name:'AES-GCM', iv: fromB64(ARTIFACT.iv) }, key, fromB64(ARTIFACT.ciphertext)
+  );
+  return new TextDecoder().decode(plainBuf);
+}
+
+function render(data) {
+  const out = document.getElementById('output');
+  let html = '<h2>Accounts</h2><table><tr><th>Provider</th><th>Account</th><th>Nominee</th><th>Value</th></tr>';
+  for (const a of data.accounts) {
+    html += '<tr><td>' + esc(a.provider) + '</td><td>' + esc(a.label + (a.maskedNumber ? ' ' + a.maskedNumber : '')) + '</td><td>' + esc(a.nominee || '⚠ no nominee') + '</td><td>' + inr(a.value) + '</td></tr>';
+  }
+  html += '</table>';
+  html += '<p class="meta">Trusted contact: <strong>' + esc(data.trustedContact) + '</strong>'
+        + (data.contactPhone ? ' · ' + esc(data.contactPhone) : '') + '</p>';
+  out.innerHTML = html;
+}
+
+document.getElementById('unlockBtn').onclick = async () => {
+  const pass = document.getElementById('passphrase').value;
+  const out = document.getElementById('output');
+  try {
+    render(JSON.parse(await decrypt(pass)));
+  } catch (e) {
+    out.innerHTML = '<p class="err">Wrong passphrase or corrupted vault.</p>';
+  }
+};
+</script>
 </body>
 </html>`;
 }

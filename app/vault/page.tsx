@@ -8,6 +8,7 @@ import { api, downloadPdf } from "@/lib/api";
 import {
   createLegacyVault,
   renderVaultHtml,
+  decryptVault,
   VaultArtifact,
 } from "@/lib/vault";
 
@@ -21,6 +22,45 @@ export default function VaultPage() {
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [artifact, setArtifact] = useState<VaultArtifact | null>(null);
+
+  // Decrypt (consumer) state
+  const [vaultInput, setVaultInput] = useState<VaultArtifact | null>(null);
+  const [decryptPass, setDecryptPass] = useState("");
+  const [decrypting, setDecrypting] = useState(false);
+  const [decrypted, setDecrypted] = useState<{
+    owner: string;
+    trustedContact: string;
+    contactPhone?: string;
+    accounts: Array<{ provider: string; label: string; maskedNumber?: string; nominee?: string; value?: number }>;
+  } | null>(null);
+  const [decryptError, setDecryptError] = useState<string | null>(null);
+
+  async function handleVaultFile(file: File) {
+    setDecryptError(null);
+    setDecrypted(null);
+    try {
+      const text = await file.text();
+      const m = text.match(/const ARTIFACT\s*=\s*(\{[\s\S]*?\});/);
+      const json = m ? m[1] : text.trim();
+      setVaultInput(JSON.parse(json) as VaultArtifact);
+    } catch {
+      setDecryptError("Could not read that file — upload the .html Legacy Vault.");
+    }
+  }
+
+  async function doDecrypt() {
+    if (!vaultInput) return;
+    setDecrypting(true);
+    setDecryptError(null);
+    try {
+      const plain = await decryptVault(vaultInput, decryptPass);
+      setDecrypted(JSON.parse(plain));
+    } catch {
+      setDecryptError("Wrong passphrase or corrupted vault.");
+    } finally {
+      setDecrypting(false);
+    }
+  }
 
   if (!snapshot) {
     return (
@@ -205,6 +245,85 @@ export default function VaultPage() {
           </p>
         </div>
       )}
+
+      {/* Decrypt a received vault (for the family member / consumer) */}
+      <div className="mt-8 rounded-2xl border border-ink-200 bg-white p-6">
+        <h2 className="text-lg font-bold">🔓 Decrypt a Legacy Vault</h2>
+        <p className="mt-1 text-sm text-ink-500">
+          Received a <code className="rounded bg-ink-100 px-1">.html</code> Legacy
+          Vault from a family member? Upload it and enter the passphrase to view
+          the accounts.
+        </p>
+
+        <div className="mt-4 space-y-3">
+          <input
+            type="file"
+            accept=".html,text/html"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleVaultFile(f);
+            }}
+            className="block w-full text-sm text-ink-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink-800"
+          />
+          {vaultInput && (
+            <p className="text-xs text-forest-700">
+              ✓ Loaded vault for <strong>{vaultInput.owner}</strong> ·{" "}
+              {vaultInput.accountCount} accounts
+            </p>
+          )}
+          <Field label="Passphrase">
+            <input
+              type="password"
+              value={decryptPass}
+              onChange={(e) => setDecryptPass(e.target.value)}
+              placeholder="Family Vault passphrase"
+              className="input"
+            />
+          </Field>
+          <button
+            onClick={doDecrypt}
+            disabled={!vaultInput || !decryptPass || decrypting}
+            className="w-full rounded-xl bg-forest-600 px-6 py-3 text-sm font-semibold text-white hover:bg-forest-700 disabled:opacity-40"
+          >
+            {decrypting ? "Decrypting…" : "Decrypt"}
+          </button>
+
+          {decryptError && (
+            <p className="text-sm text-red-600">{decryptError}</p>
+          )}
+
+          {decrypted && (
+            <div className="mt-4 rounded-xl bg-ink-50 p-4">
+              <p className="text-sm font-semibold">
+                {decrypted.owner} · Trusted contact: {decrypted.trustedContact}
+                {decrypted.contactPhone ? ` · ${decrypted.contactPhone}` : ""}
+              </p>
+              <ul className="mt-3 space-y-2">
+                {decrypted.accounts.map((a, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm"
+                  >
+                    <span>
+                      {a.provider} · {a.label}
+                      {a.maskedNumber ? ` ${a.maskedNumber}` : ""}
+                    </span>
+                    <span
+                      className={
+                        a.nominee && !a.nominee.startsWith("NO NOMINEE")
+                          ? "text-forest-700"
+                          : "text-red-600"
+                      }
+                    >
+                      {a.nominee || "No nominee"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
