@@ -50,6 +50,12 @@ export interface AffidavitResult {
   mock: boolean;
 }
 
+export interface NameAffidavitResult {
+  affidavitText: string;
+  pdfBase64: string;
+  mock: boolean;
+}
+
 export interface NodalCompany {
   name: string;
   ticker: string;
@@ -79,4 +85,36 @@ export async function uploadOcr(kyc: File, cert: File): Promise<OcrResult> {
     );
   }
   return env.data as OcrResult;
+}
+
+/** Download a base64 PDF (from the engine) as a file. */
+export function downloadPdf(b64: string, filename: string): void {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const blob = new Blob([bytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Open a print-friendly window for a document and trigger the print dialog. */
+export function printText(title: string, text: string): void {
+  const w = window.open("", "_blank", "width=720,height=900");
+  if (!w) return;
+  const esc = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  w.document.write(
+    `<html><head><title>${title}</title><style>` +
+      `body{font-family:Georgia,serif;max-width:640px;margin:32px auto;padding:0 16px;}` +
+      `pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:14px;line-height:1.6;}` +
+      `</style></head><body><h2>${title}</h2><pre>${esc}</pre>` +
+      `<script>window.onload=function(){window.print()}</script></body></html>`,
+  );
+  w.document.close();
 }

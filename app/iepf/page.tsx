@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { api, uploadOcr, OcrResult, NodalResponse } from "@/lib/api";
+import {
+  api,
+  uploadOcr,
+  downloadPdf,
+  printText,
+  OcrResult,
+  NodalResponse,
+  NameAffidavitResult,
+} from "@/lib/api";
 
 export default function IepfPage() {
   const [kycFile, setKycFile] = useState<File | null>(null);
@@ -10,6 +18,9 @@ export default function IepfPage() {
   const [status, setStatus] = useState<"idle" | "analyzing" | "done" | "error">("idle");
   const [ocr, setOcr] = useState<OcrResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [affBusy, setAffBusy] = useState(false);
+  const [nameAff, setNameAff] = useState<NameAffidavitResult | null>(null);
 
   const [company, setCompany] = useState("");
   const [nodalBusy, setNodalBusy] = useState(false);
@@ -20,6 +31,7 @@ export default function IepfPage() {
     setStatus("analyzing");
     setError(null);
     setOcr(null);
+    setNameAff(null);
     try {
       const res = await uploadOcr(kycFile, certFile);
       setOcr(res);
@@ -27,6 +39,23 @@ export default function IepfPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "OCR failed");
       setStatus("error");
+    }
+  }
+
+  async function handleGenerateNameAffidavit() {
+    if (!ocr) return;
+    setAffBusy(true);
+    setError(null);
+    try {
+      const res = await api<NameAffidavitResult>("/docs/name-affidavit", {
+        method: "POST",
+        body: JSON.stringify({ kycName: ocr.kycName, certificateName: ocr.certificateName }),
+      });
+      setNameAff(res);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate affidavit");
+    } finally {
+      setAffBusy(false);
     }
   }
 
@@ -115,10 +144,45 @@ export default function IepfPage() {
             <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
               <p className="font-bold">⚠️ Name mismatch detected</p>
               <p className="mt-1 text-sm opacity-90">
-                The IEPF Authority will likely reject your claim. Obtain a legal{" "}
-                <strong>Affidavit for Name Discrepancy</strong> and an NOC before
-                submitting.
+                The IEPF Authority will likely reject your claim. Generate a
+                legal <strong>Affidavit for Name Discrepancy</strong> below and
+                submit it with your filing.
               </p>
+              <button
+                onClick={handleGenerateNameAffidavit}
+                disabled={affBusy}
+                className="mt-3 rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700 disabled:opacity-50"
+              >
+                {affBusy ? "Generating…" : "Generate name-discrepancy affidavit"}
+              </button>
+
+              {nameAff && (
+                <div className="mt-4 rounded-xl bg-white p-4">
+                  <textarea
+                    readOnly
+                    value={nameAff.affidavitText}
+                    className="min-h-[200px] w-full rounded-lg border border-ink-200 bg-ink-50 p-3 font-mono text-xs leading-relaxed text-ink-700 outline-none"
+                  />
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() =>
+                        downloadPdf(nameAff.pdfBase64, "affidavit-name-discrepancy.pdf")
+                      }
+                      className="flex-1 rounded-xl bg-ink-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-ink-800"
+                    >
+                      ⬇ Download PDF
+                    </button>
+                    <button
+                      onClick={() =>
+                        printText("Affidavit for Name Discrepancy", nameAff.affidavitText)
+                      }
+                      className="flex-1 rounded-xl border border-ink-300 bg-white px-4 py-2.5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+                    >
+                      🖨 Print
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

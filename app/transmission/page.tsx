@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { api, AffidavitResult } from "@/lib/api";
+import { api, AffidavitResult, downloadPdf, printText } from "@/lib/api";
 import { TransmissionTracker } from "@/components/TransmissionTracker";
 
 interface FamilyMemberInput {
@@ -179,12 +179,32 @@ export default function TransmissionPage() {
               value={result.affidavitText}
               className="mt-4 min-h-[280px] w-full rounded-xl border border-ink-200 bg-ink-50 p-3 font-mono text-xs leading-relaxed text-ink-700 outline-none"
             />
-            <button
-              onClick={() => navigator.clipboard.writeText(result.affidavitText)}
-              className="mt-3 rounded-xl bg-ink-800 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-700"
-            >
-              Copy text
-            </button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => navigator.clipboard.writeText(result.affidavitText)}
+                className="rounded-xl bg-ink-800 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-700"
+              >
+                Copy text
+              </button>
+              {result.pdfBase64 && (
+                <button
+                  onClick={() =>
+                    downloadPdf(result.pdfBase64!, "affidavit-transmission.pdf")
+                  }
+                  className="rounded-xl bg-forest-600 px-4 py-2 text-sm font-semibold text-white hover:bg-forest-700"
+                >
+                  ⬇ Download PDF
+                </button>
+              )}
+              <button
+                onClick={() =>
+                  printText("Affidavit for Transmission of Shares", result.affidavitText)
+                }
+                className="rounded-xl border border-ink-300 bg-white px-4 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+              >
+                🖨 Print
+              </button>
+            </div>
           </div>
         </div>
       )}
