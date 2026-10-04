@@ -77,6 +77,7 @@ async function fetchMockSnapshot(
       .toString(36)
       .slice(2, 8)}`,
     fetchedAt: new Date().toISOString(),
+    ownerName: "Ramesh Sharma",
     holdings,
   };
 }
@@ -108,6 +109,7 @@ async function fetchEngineSnapshot(
     aggregator,
     consentId: consent.consentId,
     fetchedAt: new Date().toISOString(),
+    ownerName: fetched.ownerName,
     holdings,
   };
 }

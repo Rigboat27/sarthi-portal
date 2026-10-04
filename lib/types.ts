@@ -54,6 +54,7 @@ export interface AaConsentResponse {
 
 export interface AaFetchResponse {
   consentId: string;
+  ownerName?: string;
   fips: Fip[];
 }
 
@@ -105,6 +106,8 @@ export interface WealthSnapshot {
   aggregator: AccountAggregator;
   consentId: string;
   fetchedAt: string;
+  /** Account holder (customer) name from the AA. */
+  ownerName?: string;
   holdings: Holding[];
 }
 

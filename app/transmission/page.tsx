@@ -56,8 +56,13 @@ export default function TransmissionPage() {
     if (!h) return;
     setSelected(h);
     setFolio(h.identifier ?? "");
-    // The holding carries no physical-certificate details, so folio is the
-    // only field we can populate directly; the rest is filled from the cert.
+    // Pre-fill from the AA data: account holder = deceased, nominee = applicant.
+    if (snapshot?.ownerName) setDeceased(snapshot.ownerName);
+    if (h.nominee?.verified) {
+      setApplicant(h.nominee.name);
+      setRelationship(h.nominee.relationship);
+    }
+    // The holding carries no physical-certificate details, so the rest is manual.
   }
 
   function setHeir(i: number, patch: Partial<HeirInput>) {
