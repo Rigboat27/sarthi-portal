@@ -13,6 +13,17 @@ import {
 } from "@/lib/api";
 import { useStore } from "@/components/StoreProvider";
 import { t } from "@/lib/i18n";
+import { Checklist } from "@/components/Checklist";
+
+const IEPF_CHECKLIST = [
+  { id: "identity", title: "Proof of identity", hint: "Aadhaar / PAN of the claimant." },
+  { id: "entitlement", title: "Proof of entitlement", hint: "Original share certificate / dividend warrant." },
+  { id: "bank", title: "Cancelled cheque / bank proof", hint: "For the refund to be credited." },
+  { id: "indemnity", title: "Indemnity bond", hint: "As required by the company / authority." },
+  { id: "affidavit", title: "Affidavit for name discrepancy", hint: "Generated above if the names differ." },
+  { id: "nodal", title: "Mail to the Nodal Officer", hint: "Route above gives the correct company." },
+  { id: "file", title: "File IEPF-5 online & track", hint: "On the MCA portal, then follow up." },
+];
 
 export default function IepfPage() {
   const { lang } = useStore();
@@ -247,6 +258,12 @@ export default function IepfPage() {
             <p className="mt-2 text-xs text-amber-700">{nodal.warning}</p>
           </div>
         )}
+      </div>
+
+      {/* Claim readiness checklist */}
+      <div className="mt-6 rounded-2xl border border-ink-200 bg-white p-6">
+        <h2 className="mb-3 text-lg font-bold">3 · Claim readiness checklist</h2>
+        <Checklist items={IEPF_CHECKLIST} storageKey="sarthi.iepf.checklist" />
       </div>
 
       <Link

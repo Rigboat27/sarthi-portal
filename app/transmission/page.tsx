@@ -112,7 +112,7 @@ export default function TransmissionPage() {
       <div className="mt-8 space-y-6 rounded-2xl border border-ink-200 bg-white p-6">
         {/* AA-connected account picker */}
         {connected && transmittable.length > 0 && (
-          <Section title="Pull from your Wealth Map">
+          <Section title={t(lang, "form.pullAA")}>
             <p className="text-sm text-ink-500">
               Your Account Aggregator data is connected — pick an account to
               pre-fill the folio instead of typing it.
@@ -136,76 +136,76 @@ export default function TransmissionPage() {
         )}
 
         {/* Deceased */}
-        <Section title="Deceased shareholder">
-          <Field label="Full name">
+        <Section title={t(lang, "form.deceased")}>
+          <Field label={t(lang, "form.fullName")}>
             <input className="input" value={deceased} onChange={(e) => setDeceased(e.target.value)} placeholder="e.g. Ramesh Sharma" />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Date of death">
+            <Field label={t(lang, "form.dateOfDeath")}>
               <input className="input" value={dateOfDeath} onChange={(e) => setDateOfDeath(e.target.value)} placeholder="e.g. 12 June 2025" />
             </Field>
-            <Field label="Place of death">
+            <Field label={t(lang, "form.placeOfDeath")}>
               <input className="input" value={placeOfDeath} onChange={(e) => setPlaceOfDeath(e.target.value)} placeholder="e.g. Mumbai" />
             </Field>
           </div>
         </Section>
 
         {/* Applicant */}
-        <Section title="Applicant (you)">
-          <Field label="Your full name">
+        <Section title={t(lang, "form.applicant")}>
+          <Field label={t(lang, "form.yourName")}>
             <input className="input" value={applicant} onChange={(e) => setApplicant(e.target.value)} placeholder="e.g. Priya Sharma" />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Relation to deceased">
+            <Field label={t(lang, "form.relation")}>
               <input className="input" value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="e.g. Spouse / Son / Daughter" />
             </Field>
-            <Field label="Your age">
+            <Field label={t(lang, "form.age")}>
               <input className="input" value={age} onChange={(e) => setAge(e.target.value)} placeholder="e.g. 38" />
             </Field>
           </div>
-          <Field label="Residential address">
+          <Field label={t(lang, "form.address")}>
             <input className="input" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g. 12 MG Road, Mumbai" />
           </Field>
         </Section>
 
         {/* Shareholding */}
-        <Section title="Shareholding details">
-          <Field label="Company name">
+        <Section title={t(lang, "form.shareholding")}>
+          <Field label={t(lang, "form.company")}>
             <input className="input" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Reliance Industries Ltd" />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Folio No.">
+            <Field label={t(lang, "form.folio")}>
               <input className="input" value={folio} onChange={(e) => setFolio(e.target.value)} placeholder="e.g. 98765432/44" />
             </Field>
-            <Field label="Number of shares">
+            <Field label={t(lang, "form.shares")}>
               <input className="input" value={shares} onChange={(e) => setShares(e.target.value)} placeholder="e.g. 100" />
             </Field>
-            <Field label="Certificate No(s).">
+            <Field label={t(lang, "form.certNos")}>
               <input className="input" value={certNos} onChange={(e) => setCertNos(e.target.value)} placeholder="e.g. 112233 / 445566" />
             </Field>
-            <Field label="Distinctive Nos.">
+            <Field label={t(lang, "form.distinctiveNos")}>
               <input className="input" value={distinctiveNos} onChange={(e) => setDistinctiveNos(e.target.value)} placeholder="e.g. 1001 to 1100" />
             </Field>
           </div>
-          <Field label="Face value (Rs. per share)">
+          <Field label={t(lang, "form.faceValue")}>
             <input className="input" value={faceValue} onChange={(e) => setFaceValue(e.target.value)} placeholder="e.g. 10" />
           </Field>
         </Section>
 
         {/* Heirs */}
-        <Section title="Legal heirs (family tree)">
+        <Section title={t(lang, "form.heirs")}>
           <p className="text-sm text-ink-500">
             List every legal heir, including yourself if you inherit jointly.
           </p>
           {heirs.map((h, i) => (
             <div key={i} className="mb-2 grid gap-2 sm:grid-cols-[1fr_70px_1fr]">
-              <input className="input" placeholder="Name" value={h.name} onChange={(e) => setHeir(i, { name: e.target.value })} />
-              <input className="input" placeholder="Age" value={h.age} onChange={(e) => setHeir(i, { age: e.target.value })} />
-              <input className="input" placeholder="Relationship" value={h.relationship} onChange={(e) => setHeir(i, { relationship: e.target.value })} />
+              <input className="input" placeholder={t(lang, "form.fullName")} value={h.name} onChange={(e) => setHeir(i, { name: e.target.value })} />
+              <input className="input" placeholder={t(lang, "form.age")} value={h.age} onChange={(e) => setHeir(i, { age: e.target.value })} />
+              <input className="input" placeholder={t(lang, "form.relation")} value={h.relationship} onChange={(e) => setHeir(i, { relationship: e.target.value })} />
             </div>
           ))}
           <button onClick={addHeir} className="text-sm font-medium text-saffron-600 hover:text-saffron-700">
-            + Add heir
+            {t(lang, "form.addHeir")}
           </button>
         </Section>
 

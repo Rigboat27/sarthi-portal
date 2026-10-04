@@ -62,7 +62,26 @@ export type StringKey =
   | "page.iepf.title"
   | "page.transmission.generate"
   | "page.iepf.analyze"
-  | "page.vault.encrypt";
+  | "page.vault.encrypt"
+  | "form.deceased"
+  | "form.applicant"
+  | "form.shareholding"
+  | "form.heirs"
+  | "form.pullAA"
+  | "form.fullName"
+  | "form.dateOfDeath"
+  | "form.placeOfDeath"
+  | "form.yourName"
+  | "form.relation"
+  | "form.age"
+  | "form.address"
+  | "form.company"
+  | "form.folio"
+  | "form.shares"
+  | "form.certNos"
+  | "form.distinctiveNos"
+  | "form.faceValue"
+  | "form.addHeir";
 
 type Dict = Partial<Record<Lang, string>>;
 
@@ -269,6 +288,25 @@ const STRINGS: Record<StringKey, Dict> = {
     as: "এনক্ৰিপ্ট কৰি ভল্ট নিৰ্মাণ কৰক", ne: "इन्क्रिप्ट गरेर तिजोरी बनाउनुहोस्",
     sa: "सङ्केतयित्वा कोशं निर्मीयताम्",
   },
+  "form.deceased": { en: "Deceased shareholder", hi: "मृतक शेयरधारक" },
+  "form.applicant": { en: "Applicant (you)", hi: "आवेदक (आप)" },
+  "form.shareholding": { en: "Shareholding details", hi: "शेयरधारिता विवरण" },
+  "form.heirs": { en: "Legal heirs (family tree)", hi: "कानूनी उत्तराधिकारी (परिवार वृक्ष)" },
+  "form.pullAA": { en: "Pull from your Wealth Map", hi: "अपने धन मानचित्र से चुनें" },
+  "form.fullName": { en: "Full name", hi: "पूरा नाम" },
+  "form.dateOfDeath": { en: "Date of death", hi: "मृत्यु तिथि" },
+  "form.placeOfDeath": { en: "Place of death", hi: "मृत्यु स्थान" },
+  "form.yourName": { en: "Your full name", hi: "आपका पूरा नाम" },
+  "form.relation": { en: "Relation to deceased", hi: "मृतक से संबंध" },
+  "form.age": { en: "Your age", hi: "आपकी आयु" },
+  "form.address": { en: "Residential address", hi: "आवासीय पता" },
+  "form.company": { en: "Company name", hi: "कंपनी का नाम" },
+  "form.folio": { en: "Folio No.", hi: "फोलियो संख्या" },
+  "form.shares": { en: "Number of shares", hi: "शेयरों की संख्या" },
+  "form.certNos": { en: "Certificate No(s).", hi: "प्रमाणपत्र संख्या" },
+  "form.distinctiveNos": { en: "Distinctive Nos.", hi: "विशिष्ट संख्या" },
+  "form.faceValue": { en: "Face value (Rs. per share)", hi: "अंकित मूल्य (₹ प्रति शेयर)" },
+  "form.addHeir": { en: "+ Add heir", hi: "+ उत्तराधिकारी जोड़ें" },
 };
 
 export function t(lang: Lang, key: StringKey): string {
